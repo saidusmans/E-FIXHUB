@@ -1,0 +1,114 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Mechanic Dashboard | E-Fix Hub{% endblock %}
+{% block page_title %}Mechanic Restoration Workbench{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- Workshop Header -->
+    <div class="flex items-end justify-between overflow-hidden">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tighter leading-none">ENGINEERING WORKSHOP</h1>
+            <p class="text-slate-500 font-medium mt-2">Specialization: <span class="text-accent font-bold">Industrial
+                    Electronics</span></p>
+        </div>
+        <div class="hidden md:flex gap-4">
+            <div class="glass-card !py-2 !px-6 border-accent/20">
+                <span class="text-[10px] font-black text-accent uppercase tracking-[0.2em]">Workshop OK</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Repair Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for item in pending_repairs %}
+        <div
+            class="glass-card flex flex-col h-full bg-gradient-to-br from-white/5 to-transparent border-white/5 group relative overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-32 h-32 bg-accent/5 blur-3xl -z-10 transition-all duration-700 group-hover:bg-accent/10">
+            </div>
+
+            <div class="relative h-64 rounded-2xl overflow-hidden mb-6 shadow-2xl">
+                <img src="{{ item.image.url }}"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-primary/90 to-transparent">
+                    <span
+                        class="text-[9px] font-black bg-warning text-white px-2 py-1 rounded italic uppercase tracking-widest">Urgent
+                        Inspection</span>
+                </div>
+            </div>
+
+            <div class="flex-1 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3
+                        class="text-2xl font-black text-white tracking-tight group-hover:text-accent transition-colors italic uppercase">
+                        {{ item.title }}</h3>
+                    <span
+                        class="text-[8px] px-2 py-0.5 rounded bg-white/5 text-slate-500 font-bold uppercase tracking-widest">{{ item.get_status_display }}</span>
+                </div>
+                <p class="text-slate-400 text-sm leading-relaxed line-clamp-2 font-medium">{{ item.description }}</p>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-white/5 space-y-4">
+                <div class="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em]">
+                    <span class="text-slate-600">Restoration Depth</span>
+                    <span class="text-accent">{{ item.repair_progress_percentage }}% Complete</span>
+                </div>
+                <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-accent transition-all duration-500"
+                        style="width: {{ item.repair_progress_percentage }}%"></div>
+                </div>
+
+                {% if item.status == 'mechanic_assigned' %}
+                <a href="{% url 'repair_item' item.pk %}"
+                    class="btn-accent w-full block text-center !py-4 italic font-black uppercase tracking-widest bg-gradient-to-r from-accent to-emerald-700 shadow-xl mt-4">Initiate
+                    Restoration</a>
+                {% elif item.status == 'repairing' %}
+                <a href="{% url 'repair_item' item.pk %}"
+                    class="btn-accent w-full block text-center !py-4 italic font-black uppercase tracking-widest bg-gradient-to-r from-blue-600 to-blue-800 shadow-xl mt-4">In
+                    Production</a>
+                {% elif item.status == 'repair_completed' %}
+                <div
+                    class="w-full py-4 text-center bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-slate-500 uppercase tracking-widest italic">
+                    Signal Sent: Awaiting Audit</div>
+                {% elif item.status == 'awaiting_admin_approval' %}
+                <div
+                    class="w-full py-4 text-center bg-accent/10 border border-accent/20 rounded-xl text-[10px] font-black text-accent uppercase tracking-widest italic">
+                    Agent En Route</div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-32 text-center glass-card border-dashed flex flex-col items-center gap-6">
+            <div
+                class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-slate-800 border border-white/5">
+                <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+                </svg>
+            </div>
+            <p
+                class="text-slate-500 font-bold italic tracking-[0.3em] text-xs uppercase underline decoration-accent/30 underline-offset-8 decoration-4">
+                Workbench status: Idle • Monitoring for signals</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Workshop Metrics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass-card flex items-center gap-6">
+            <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Weekly Fixed</p>
+                <p class="text-2xl font-black text-white italic">24</p>
+            </div>
+        </div>
+        <!-- Add more metric cards if needed -->
+    </div>
+</div>
+{% endblock %}

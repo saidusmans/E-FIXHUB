@@ -1,0 +1,104 @@
+{% extends 'core/base.html' %}
+{% block title %}Manage Orders | E-Fix Hub{% endblock %}
+{% block page_title %}Sales Pipeline{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tight">SALES PIPELINE</h1>
+            <p class="text-slate-500 font-medium">Manage product sales and delivery logistics.</p>
+        </div>
+        <span class="glass-card !py-2 !px-6 text-xs font-black uppercase tracking-widest text-accent border-accent/20">
+            {{ orders.count }} Total Orders
+        </span>
+    </div>
+
+    <!-- Orders List -->
+    <div class="glass-card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-white/5 uppercase tracking-widest text-[10px] font-black text-slate-500">
+                        <th class="px-6 py-4">Order ID</th>
+                        <th class="px-6 py-4">Product</th>
+                        <th class="px-6 py-4">Buyer</th>
+                        <th class="px-6 py-4">Price</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Agent</th>
+                        <th class="px-6 py-4 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for order in orders %}
+                    <tr class="hover:bg-white/[0.02] transition-colors group">
+                        <td class="px-6 py-4 font-black text-white italic text-sm">#{{ order.id }}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ order.product.display_image.url }}"
+                                    class="w-10 h-10 rounded-lg object-cover" alt="">
+                                <div>
+                                    <p class="text-sm font-bold text-white leading-tight">
+                                        {{ order.product.linked_item.title }}
+                                    </p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <p class="text-[10px] text-slate-500 uppercase font-black italic">Refurbished
+                                        </p>
+                                        <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+                                        <p class="text-[9px] font-black text-accent uppercase tracking-tighter">
+                                            {% if order.product.linked_item.status == 'awaiting_admin_approval' or order.product.linked_item.status == 'published_in_store' or order.product.linked_item.status == 'ordered' or order.product.linked_item.status == 'delivered' %}
+                                            At Central Hub
+                                            {% else %}
+                                            At Workshop @{{ order.product.linked_item.assigned_mechanic.username }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="text-sm font-bold text-white">{{ order.shipping_name|default:order.buyer.username }}</p>
+                            <p class="text-[9px] text-slate-500 font-medium uppercase tracking-tighter">{{ order.shipping_phone }}</p>
+                            <div
+                                class="mt-2 p-2 bg-white/5 rounded border border-white/5 text-[9px] text-slate-400 leading-tight max-w-[180px]">
+                                {{ order.shipping_address|truncatechars:60 }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-black text-accent italic">₹{{ order.total_price }}</td>
+                        <td class="px-6 py-4">
+                            <span
+                                class="status-badge text-[9px] {% if order.status == 'ordered' %} bg-warning/10 text-warning {% elif order.status == 'delivery_assigned' %} bg-sky-600/10 text-sky-400 {% elif order.status == 'out_for_delivery' %} bg-info/10 text-info {% elif order.status == 'delivered' %} bg-accent/10 text-accent {% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-xs font-bold text-slate-400">
+                            {% if order.assigned_agent %}
+                            {{ order.assigned_agent.username }}
+                            {% else %}
+                            <span class="text-slate-600 italic">Unassigned</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            {% if order.status == 'ordered' %}
+                            <a href="{% url 'assign_delivery' order.pk %}"
+                                class="btn-accent !py-2 !px-4 !text-[10px] uppercase tracking-widest italic">Assign
+                                Agent</a>
+                            {% else %}
+                            <span class="text-[10px] font-black text-slate-600 uppercase">{{ order.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-20 text-center">
+                            <p class="text-slate-600 font-bold italic tracking-[0.3em] text-xs uppercase">No orders yet.
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

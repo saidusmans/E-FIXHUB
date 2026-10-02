@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block title %}Mechanic Login | E-Fix Hub{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center -mt-20">
+    <div class="glass-card w-full max-w-md p-10 animate-fade-in relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-warning/5 to-transparent pointer-events-none"></div>
+
+        <div class="text-center mb-10 relative z-10">
+            <div
+                class="w-16 h-16 bg-warning rounded-2xl flex items-center justify-center shadow-lg shadow-warning/20 mx-auto mb-6">
+                <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-black text-white tracking-tight">Mechanic Login</h1>
+            <p class="text-slate-400 mt-2">Access your restoration workbench</p>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div
+            class="p-4 mb-4 rounded-xl text-xs font-bold border
+            {% if message.tags == 'error' %}bg-danger/10 border-danger/20 text-danger{% else %}bg-warning/10 border-warning/20 text-warning{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post" class="space-y-6 relative z-10" action="{% url 'mechanic_login' %}">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Username</label>
+                <input type="text" name="username" class="input-premium" placeholder="Enter your username" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Password</label>
+                <input type="password" name="password" class="input-premium" placeholder="••••••••" required>
+            </div>
+            <button type="submit" style="background-color: #F59E0B;"
+                class="w-full py-4 rounded-xl font-black uppercase tracking-widest text-sm text-white hover:bg-amber-600 transition-all">Login
+                as Mechanic</button>
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-white/5 text-center relative z-10 space-y-2">
+            <p class="text-slate-500 text-sm">New Mechanic? <a href="{% url 'mechanic_register' %}"
+                    class="text-warning font-bold hover:underline">Apply as Mechanic</a></p>
+            <p class="text-slate-600 text-xs">Not a Mechanic? <a href="{% url 'role_selection' %}"
+                    class="text-slate-400 hover:text-white">Choose a different role</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,486 @@
+{
+    "prompt_metadata": {
+        "title": "E-Fix Hub — Admin Dashboard Reverse Engineering & Product Lifecycle Management",
+        "version": "2.0.0",
+        "created_at": "2026-03-05T22:14:00+05:30",
+        "project_name": "E-Fix Hub",
+        "project_type": "Django Web Application (Circular Economy E-Waste Platform)",
+        "reference_file": "PROJECT_SYSTEM_EXPLANATION.md",
+        "tech_stack": {
+            "backend": "Django 6.1 (Python)",
+            "frontend": "TailwindCSS + Custom Industrial Theme",
+            "database": "SQLite (Development)",
+            "template_engine": "Django Template Language (DTL)"
+        }
+    },
+    "project_context": {
+        "description": "E-Fix Hub is a circular economy platform where customers upload e-waste items, which are then collected by agents, restored by mechanics, and sold as refurbished products through an integrated online store (similar to Amazon/Flipkart). The admin has full oversight of the entire lifecycle.",
+        "existing_models": [
+            "CustomUser (roles: ADMIN, CUSTOMER, AGENT, MECHANIC)",
+            "AgentProfile (verification_status, is_available)",
+            "MechanicProfile (specialization, workshop_address)",
+            "EWasteItem (status, category, repair_progress, timestamps)",
+            "RepairLog (repair_notes, cost, is_paid, paid_at)",
+            "Product (linked_item, price, is_published, is_sold)",
+            "Order (product, buyer, assigned_agent, status, payment_method)",
+            "Notification (user, message, is_read)",
+            "ActivityLog (user, action, timestamp)"
+        ],
+        "key_urls": {
+            "admin_dashboard": "/admin-panel/",
+            "manage_products": "/admin-panel/products/",
+            "item_detail": "/admin-panel/items/<id>/",
+            "assign_agent": "/admin-panel/assign-agent/<id>/",
+            "assign_mechanic": "/admin-panel/assign-mechanic/<id>/",
+            "publish_product": "/admin-panel/publish-product/<id>/",
+            "refurbished_store": "/store/",
+            "purchase_product": "/purchase/<id>/"
+        }
+    },
+    "objectives": [
+        {
+            "id": "OBJ-001",
+            "title": "Admin Product Management Grid (Manage Products Page)",
+            "route": "/admin-panel/products/",
+            "template": "core/templates/core/dashboard/admin/admin_manage_products.html",
+            "description": "The admin should see ALL e-waste items in a comprehensive grid/card layout. Each card must display strategic data about the item at a glance.",
+            "requirements": {
+                "card_must_display": [
+                    "Item title and image",
+                    "Current lifecycle status with color-coded badge (Pending, Approved, With Agent, In Repair, Repaired, Listed for Sale, Sold Out)",
+                    "Category label (Mobile, Laptop, TV, Appliance, Other)",
+                    "Restoration progress bar with percentage (0-100%)",
+                    "Current physical location of the item (User Origin / Agent Transit / Mechanic Workshop / Central Hub / Store Inventory)",
+                    "Active entity — who currently has custody (assigned agent name OR assigned mechanic name)",
+                    "Key timestamp — when it was logged into the system",
+                    "Sold/Live status with date if applicable"
+                ],
+                "action_buttons_per_card": [
+                    "Inspect — Opens the detailed item view (admin_item_detail)",
+                    "Approve — Only visible if status is 'Pending'",
+                    "Dispatch Agent — Only visible if status is 'Approved' (to assign a pickup agent)",
+                    "Assign Engineer — Only visible if status is 'Collected' (to assign a mechanic)",
+                    "Market Inject — Only visible if restoration is complete (to publish to refurbished store)"
+                ],
+                "filtering": "Items should be filterable or categorized by status groups (Pending, Approved, With Agent, In Repair, Repaired, Sold Out)",
+                "empty_state": "Professional empty state message when no items exist in the pipeline"
+            }
+        },
+        {
+            "id": "OBJ-002",
+            "title": "Detailed Item View (Item Detail Page)",
+            "route": "/admin-panel/items/<id>/",
+            "template": "core/templates/core/dashboard/admin/admin_item_detail.html",
+            "description": "When admin clicks on a product card (Inspect button), they should see a FULL 360-degree view of that item with all strategic intelligence.",
+            "requirements": {
+                "primary_asset_data": [
+                    "Item image with category badge overlay",
+                    "Item title",
+                    "Current lifecycle phase with color-coded status badge",
+                    "Condition description (e.g., Broken screen, No power)",
+                    "Discovery district / location where item was found",
+                    "Origin node — who uploaded it (@username)",
+                    "Initial log timestamp (when it was first uploaded)"
+                ],
+                "lifecycle_timeline": {
+                    "description": "A visual vertical timeline showing every stage of the item's journey with exact timestamps. Completed stages should have colored/glowing dots, pending stages should be dimmed.",
+                    "stages": [
+                        {
+                            "stage": "Discovery & Upload",
+                            "timestamp_field": "created_at",
+                            "color": "green/accent"
+                        },
+                        {
+                            "stage": "System Approval",
+                            "timestamp_field": "approved_at",
+                            "color": "sky/blue"
+                        },
+                        {
+                            "stage": "Field Collection",
+                            "timestamp_field": "collected_at",
+                            "color": "indigo"
+                        },
+                        {
+                            "stage": "Engineering Restoration",
+                            "timestamp_field": "restored_at",
+                            "color": "amber"
+                        },
+                        {
+                            "stage": "Market Injection",
+                            "timestamp_field": "published_at",
+                            "color": "emerald"
+                        },
+                        {
+                            "stage": "Asset Liquidation (Sold)",
+                            "timestamp_field": "sold_at",
+                            "color": "rose"
+                        }
+                    ]
+                },
+                "nodal_management": {
+                    "description": "Two side-by-side panels for assigning people to this item.",
+                    "panels": [
+                        {
+                            "panel_name": "Logistics Node (Agent Assignment)",
+                            "shows": "Currently assigned agent name with avatar initial, OR 'No agent dispatched yet'",
+                            "action_button": "Dispatch Agent — visible only when status is 'Approved'",
+                            "action_url": "assign_agent"
+                        },
+                        {
+                            "panel_name": "Restoration Node (Mechanic Assignment)",
+                            "shows": "Currently assigned mechanic/engineer name with avatar initial, OR 'Engineering node not yet established'",
+                            "action_button": "Assign Engineer — visible only when status is 'Collected'",
+                            "action_url": "assign_mechanic"
+                        }
+                    ]
+                },
+                "restoration_blueprint": {
+                    "description": "Detailed engineering data about the restoration process.",
+                    "data_points": [
+                        "Repair progress bar with percentage (0-100%)",
+                        "Item description / field notes from the customer",
+                        "Pickup target coordinates (collection address)",
+                        "Hardware modification log / parts replaced",
+                        "Strategic ETA (estimated completion date)",
+                        "Asset classification tier"
+                    ]
+                },
+                "marketplace_deployment": {
+                    "description": "If the item has been converted to a Product and published to the store, show marketplace data.",
+                    "when_published": [
+                        "Product price (₹ value)",
+                        "Live/Sold status badge",
+                        "Stock count",
+                        "Order transmission logs — list of all orders for this product with buyer name, date, and delivery status"
+                    ],
+                    "when_not_published": [
+                        "Message: 'Awaiting Nodal Maturation — This asset is currently in active restoration'",
+                        "If restoration is complete: show 'Initiate Market Injection' button that links to publish_product URL"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "OBJ-003",
+            "title": "Status Categorization System",
+            "description": "Items must be categorized through their entire lifecycle with these specific status phases.",
+            "status_phases": [
+                {
+                    "status_value": "Pending",
+                    "display_name": "Pending (Upload)",
+                    "description": "Customer has uploaded the item. Awaiting admin review.",
+                    "badge_color": "slate/gray",
+                    "location": "User Origin (Customer's location)"
+                },
+                {
+                    "status_value": "Approved",
+                    "display_name": "Approved",
+                    "description": "Admin has approved the item for collection.",
+                    "badge_color": "sky/blue",
+                    "location": "User Origin (Still at customer's location)"
+                },
+                {
+                    "status_value": "Assigned to Agent",
+                    "display_name": "With Agent (Retaining)",
+                    "description": "A logistics agent has been assigned to pick up this item.",
+                    "badge_color": "indigo",
+                    "location": "In Transit (Agent has or is going to collect)"
+                },
+                {
+                    "status_value": "Collected",
+                    "display_name": "Collected (In Transit)",
+                    "description": "Agent has physically collected the item from the customer.",
+                    "badge_color": "indigo",
+                    "location": "In Transit to Mechanic or Hub"
+                },
+                {
+                    "status_value": "Assigned to Mechanic",
+                    "display_name": "In Repair (At Mechanic)",
+                    "description": "Item is at the mechanic's workshop for restoration.",
+                    "badge_color": "amber/orange",
+                    "location": "Mechanic Workshop"
+                },
+                {
+                    "status_value": "Restoration in Progress",
+                    "display_name": "Restoration in Progress",
+                    "description": "Mechanic is actively working on restoring this item. Progress percentage is being tracked.",
+                    "badge_color": "amber/orange",
+                    "location": "Mechanic Workshop"
+                },
+                {
+                    "status_value": "Restoration Complete",
+                    "display_name": "Restoration Complete",
+                    "description": "Mechanic has finished restoration. Item is ready for retrieval or direct publishing.",
+                    "badge_color": "emerald/green",
+                    "location": "Mechanic Workshop (ready for pickup) or Central Hub"
+                },
+                {
+                    "status_value": "Repaired",
+                    "display_name": "Repaired",
+                    "description": "Item has been fully repaired and is at the central hub.",
+                    "badge_color": "emerald/green",
+                    "location": "Central Logistics Hub"
+                },
+                {
+                    "status_value": "Converted to Product",
+                    "display_name": "Listed for Sale",
+                    "description": "Item has been converted to a Product and published in the refurbished store.",
+                    "badge_color": "purple",
+                    "location": "Store Inventory Node"
+                },
+                {
+                    "status_value": "Sold Out",
+                    "display_name": "Sold Out",
+                    "description": "Item has been purchased by a customer. Lifecycle complete.",
+                    "badge_color": "rose/red",
+                    "location": "Delivered to Buyer / In Delivery"
+                }
+            ]
+        },
+        {
+            "id": "OBJ-004",
+            "title": "Timestamp Tracking (Full Lifecycle Audit Trail)",
+            "description": "Every major event in the item's lifecycle MUST be recorded with a precise date and time.",
+            "timestamp_fields": [
+                {
+                    "field_name": "created_at",
+                    "event": "Item uploaded by customer",
+                    "triggered_in_view": "customer_upload",
+                    "type": "auto_now_add (automatic)"
+                },
+                {
+                    "field_name": "approved_at",
+                    "event": "Admin approves the item for collection",
+                    "triggered_in_view": "admin_approve_item",
+                    "type": "manual (set when status changes to 'Approved')"
+                },
+                {
+                    "field_name": "collected_at",
+                    "event": "Agent physically collects the item from customer",
+                    "triggered_in_view": "agent_mark_collected",
+                    "type": "manual (set when agent marks collection)"
+                },
+                {
+                    "field_name": "restored_at",
+                    "event": "Mechanic completes the restoration (repair_progress = 100%)",
+                    "triggered_in_view": "mechanic_repair",
+                    "type": "manual (set when repair is marked complete)"
+                },
+                {
+                    "field_name": "published_at",
+                    "event": "Admin publishes the item as a Product in the refurbished store",
+                    "triggered_in_view": "admin_publish_product",
+                    "type": "manual (set when product is created/published)"
+                },
+                {
+                    "field_name": "sold_at",
+                    "event": "Customer purchases the product from the store",
+                    "triggered_in_view": "customer_buy",
+                    "type": "manual (set when order is placed)"
+                }
+            ]
+        },
+        {
+            "id": "OBJ-005",
+            "title": "Refurbished Store (Customer-Facing Marketplace)",
+            "route": "/store/",
+            "template": "core/templates/core/refurbished_store.html",
+            "description": "A professional e-commerce-style store (like Amazon/Flipkart) where customers can browse and purchase restored items.",
+            "requirements": {
+                "product_card_must_display": [
+                    "Product image (from linked e-waste item)",
+                    "Product title",
+                    "Category badge (Mobile, Laptop, TV, etc.)",
+                    "Condition description",
+                    "Reference ID",
+                    "Price in INR (₹)",
+                    "Status badge: 'Ready for Market' (available) OR 'Asset Liquidated' / 'Sold Out' (sold)",
+                    "Mechanic who restored it (for trust/transparency)",
+                    "'Secure Unit' purchase button (disabled if sold out)"
+                ],
+                "filtering": "Category-based filtering tabs (All, Mobile, Laptop, TV, Appliance, Other)",
+                "sold_items": "Sold out items should be visually distinct (greyed out, grayscale, non-clickable purchase button)"
+            }
+        },
+        {
+            "id": "OBJ-006",
+            "title": "Assignment Workflows",
+            "description": "Admin must be able to assign items to agents and mechanics from both the dashboard and the detail view.",
+            "workflows": [
+                {
+                    "workflow": "Assign Agent for Pickup",
+                    "trigger": "Item status is 'Approved'",
+                    "action": "Admin selects an available, verified agent to collect the item from customer",
+                    "url": "/admin-panel/assign-agent/<id>/",
+                    "result": "Item status changes to 'Assigned to Agent', agent gets notification"
+                },
+                {
+                    "workflow": "Assign Mechanic for Repair",
+                    "trigger": "Item status is 'Collected'",
+                    "action": "Admin selects a verified mechanic to restore the item",
+                    "url": "/admin-panel/assign-mechanic/<id>/",
+                    "result": "Item status changes to 'Assigned to Mechanic', mechanic gets notification"
+                },
+                {
+                    "workflow": "Publish to Refurbished Store",
+                    "trigger": "Item restoration is complete (status is 'Restoration Complete' or 'Repaired' or 'Collected from Mechanic')",
+                    "action": "Admin sets a price and publishes the item as a Product in the store",
+                    "url": "/admin-panel/publish-product/<id>/",
+                    "result": "Product is created, item status changes to 'Converted to Product', published_at timestamp is set"
+                }
+            ]
+        },
+        {
+            "id": "OBJ-007",
+            "title": "UI/UX Design Standards",
+            "description": "All interfaces must follow the established industrial/tactical design language of E-Fix Hub.",
+            "design_guidelines": {
+                "theme": "Dark industrial theme with glassmorphism",
+                "color_palette": {
+                    "primary_bg": "Dark slate (#0a0f1c or similar)",
+                    "accent": "Emerald green (for primary actions and success states)",
+                    "info": "Sky blue (for informational badges)",
+                    "warning": "Amber/Orange (for in-progress or caution states)",
+                    "danger": "Rose/Red (for sold out, critical states)",
+                    "neutral": "Slate grays (for backgrounds, borders, secondary text)"
+                },
+                "typography": "Bold, uppercase, italic industrial fonts with tracking-widest/tight",
+                "card_style": "Glass cards with border-white/5, bg-white/5 backgrounds, rounded-2xl",
+                "terminology": {
+                    "items": "assets",
+                    "users": "nodes",
+                    "location": "sector / coordinates",
+                    "mechanic": "restoration engineer",
+                    "agent": "logistics node",
+                    "status": "lifecycle phase",
+                    "upload": "discovery",
+                    "sell": "liquidation",
+                    "publish": "market injection"
+                }
+            }
+        }
+    ],
+    "database_schema_summary": {
+        "EWasteItem": {
+            "key_fields": {
+                "title": "CharField(max_length=255)",
+                "category": "CharField(choices: Mobile, Laptop, TV, Appliance, Other)",
+                "description": "TextField",
+                "condition": "CharField(max_length=100, nullable)",
+                "image": "ImageField(upload_to='ewaste/')",
+                "status": "CharField(max_length=40, choices: 13 status options)",
+                "repair_progress": "PositiveIntegerField(0-100)",
+                "parts_replaced": "TextField(nullable)",
+                "estimated_completion_date": "DateField(nullable)",
+                "collection_district": "CharField(max_length=100, nullable)",
+                "collection_address": "TextField(nullable)"
+            },
+            "foreign_keys": {
+                "uploaded_by": "ForeignKey(CustomUser) — the customer who uploaded",
+                "assigned_agent": "ForeignKey(CustomUser, nullable) — logistics agent",
+                "assigned_mechanic": "ForeignKey(CustomUser, nullable) — restoration mechanic"
+            },
+            "timestamps": {
+                "created_at": "DateTimeField(auto_now_add) — upload time",
+                "approved_at": "DateTimeField(nullable) — admin approval time",
+                "collected_at": "DateTimeField(nullable) — agent collection time",
+                "restored_at": "DateTimeField(nullable) — mechanic completion time",
+                "published_at": "DateTimeField(nullable) — store listing time",
+                "sold_at": "DateTimeField(nullable) — customer purchase time",
+                "updated_at": "DateTimeField(auto_now) — last update time"
+            }
+        },
+        "Product": {
+            "key_fields": {
+                "linked_item": "OneToOneField(EWasteItem)",
+                "price": "DecimalField(max_digits=10, decimal_places=2)",
+                "image": "ImageField(nullable, fallback to linked_item.image)",
+                "stock": "PositiveIntegerField(default=1)",
+                "is_published": "BooleanField(default=False)",
+                "is_sold": "BooleanField(default=False)"
+            }
+        },
+        "Order": {
+            "key_fields": {
+                "product": "ForeignKey(Product)",
+                "buyer": "ForeignKey(CustomUser)",
+                "assigned_agent": "ForeignKey(CustomUser, nullable)",
+                "total_price": "DecimalField",
+                "status": "CharField(choices: Pending, Assigned, Picked Up, Out for Delivery, Delivered, Cancelled)",
+                "payment_method": "CharField(choices: COD, Online)",
+                "shipping_name": "CharField(nullable)",
+                "shipping_phone": "CharField(nullable)",
+                "shipping_address": "TextField(nullable)"
+            }
+        }
+    },
+    "files_to_modify": [
+        {
+            "file": "core/models.py",
+            "purpose": "EWasteItem model with enhanced STATUS_CHOICES and lifecycle timestamp fields",
+            "status": "ALREADY UPDATED — contains all required status choices and timestamp fields"
+        },
+        {
+            "file": "core/views.py",
+            "purpose": "Workflow views that set timestamps at each lifecycle stage",
+            "key_views": [
+                "admin_approve_item — sets approved_at",
+                "agent_mark_collected — sets collected_at",
+                "mechanic_repair — sets restored_at when complete",
+                "admin_publish_product — sets published_at, creates Product",
+                "customer_buy — sets sold_at, creates Order",
+                "admin_manage_products — serves the product grid",
+                "admin_item_detail — serves the detailed item view"
+            ],
+            "status": "ALREADY UPDATED — all timestamp captures are in place"
+        },
+        {
+            "file": "core/templates/core/dashboard/admin/admin_manage_products.html",
+            "purpose": "Product management grid with telemetry cards",
+            "status": "ALREADY UPDATED — shows status badges, progress bars, location, entity, timestamps, action buttons"
+        },
+        {
+            "file": "core/templates/core/dashboard/admin/admin_item_detail.html",
+            "purpose": "Detailed item view with lifecycle timeline, nodal management, restoration blueprint, marketplace data",
+            "status": "ALREADY UPDATED — contains lifecycle timeline, agent/mechanic assignment panels, restoration data, marketplace section with publish button"
+        },
+        {
+            "file": "core/templates/core/refurbished_store.html",
+            "purpose": "Customer-facing marketplace for purchasing restored items",
+            "status": "ALREADY UPDATED — shows product cards with category, condition, sold status, purchase buttons"
+        },
+        {
+            "file": "PROJECT_SYSTEM_EXPLANATION.md",
+            "purpose": "Complete project documentation with architecture, schema, workflows",
+            "status": "ALREADY UPDATED — contains VER-018 and VER-019 entries for reverse engineering lifecycle"
+        }
+    ],
+    "validation_checklist": [
+        "✅ Admin can view all items in a grid at /admin-panel/products/",
+        "✅ Each card shows: title, status badge, category, progress bar, location, entity, timestamp",
+        "✅ Admin can click 'Inspect' to see full item detail at /admin-panel/items/<id>/",
+        "✅ Detail view shows lifecycle timeline with 6 stages and timestamps",
+        "✅ Detail view shows assigned agent and mechanic with assignment buttons",
+        "✅ Detail view shows restoration progress and engineering data",
+        "✅ Detail view shows marketplace data if published, or publish button if ready",
+        "✅ Statuses are categorized: Pending, Approved, With Agent, In Repair, Repaired, Listed, Sold Out",
+        "✅ All lifecycle timestamps are captured: created_at, approved_at, collected_at, restored_at, published_at, sold_at",
+        "✅ Refurbished store shows products with category, condition, price, sold status",
+        "✅ Sold items are visually distinct and non-purchasable",
+        "✅ PROJECT_SYSTEM_EXPLANATION.md is updated with full documentation"
+    ],
+    "instructions_for_ai_agent": {
+        "context": "You are working on the E-Fix Hub Django project. The admin dashboard at /admin-panel/products/ needs comprehensive reverse engineering capabilities for managing e-waste items through their complete lifecycle.",
+        "primary_goals": [
+            "1. Ensure the admin product management grid displays all strategic telemetry for every item",
+            "2. Ensure the item detail view provides 360-degree intelligence with lifecycle timeline and assignment controls",
+            "3. Ensure items are categorized by lifecycle status (Pending → Approved → With Agent → In Repair → Repaired → Listed → Sold Out)",
+            "4. Ensure all lifecycle timestamps are captured and displayed (upload time, approval time, collection time, restoration time, publication time, sale time)",
+            "5. Ensure the refurbished store allows customers to browse and purchase restored items",
+            "6. Ensure assignment workflows work correctly (assign agent, assign mechanic, publish to store)",
+            "7. Update PROJECT_SYSTEM_EXPLANATION.md with complete project documentation"
+        ],
+        "design_philosophy": "Industrial/tactical dark theme. Think: military command center meets e-commerce platform. Bold uppercase italic typography, glassmorphism cards, color-coded status system, neon accent glows.",
+        "reference_documentation": "Read PROJECT_SYSTEM_EXPLANATION.md for full system architecture, database schema, and workflow diagrams."
+    }
+}

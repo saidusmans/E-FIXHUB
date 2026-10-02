@@ -1,0 +1,109 @@
+{% extends 'core/base.html' %}
+{% block title %}Assigned Repairs | E-Fix Hub{% endblock %}
+{% block page_title %}Repair Workshop{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tight">REPAIR WORKSHOP</h1>
+            <p class="text-slate-400">All items assigned to your workbench.</p>
+        </div>
+        <div class="flex gap-3">
+            <span
+                class="glass-card !py-2 !px-4 text-xs font-black uppercase tracking-widest text-warning border-warning/20">
+                {{ assigned.count }} Active
+            </span>
+            <span
+                class="glass-card !py-2 !px-4 text-xs font-black uppercase tracking-widest text-accent border-accent/20">
+                {{ repaired.count }} Done
+            </span>
+        </div>
+    </div>
+
+    <!-- Active Repairs -->
+    <div>
+        <div class="flex items-center gap-4 mb-6">
+            <h3 class="text-lg font-bold text-white italic">ACTIVE REPAIRS</h3>
+            <div class="h-[1px] flex-1 bg-white/5"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {% for item in assigned %}
+            <div
+                class="glass-card group flex flex-col overflow-hidden relative bg-gradient-to-br from-white/5 to-white/0">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-warning/10 blur-2xl pointer-events-none"></div>
+                <div class="relative overflow-hidden rounded-xl mb-4 group">
+                    <img src="{{ item.image.url }}"
+                        class="w-full h-44 object-cover group-hover:scale-110 transition-transform duration-700"
+                        alt="{{ item.title }}">
+                    <div
+                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">View Details</span>
+                    </div>
+                    <div class="absolute top-3 left-3">
+                        <span class="status-badge bg-warning/80 text-white text-[9px]">Under Repair</span>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <h4
+                        class="text-lg font-black text-white italic group-hover:text-accent transition-colors leading-tight mb-2">
+                        {{ item.title }}</h4>
+                    <p class="text-slate-400 text-sm mb-4 line-clamp-2 flex-grow">{{ item.description }}</p>
+                    <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider mb-1">
+                        <span class="text-slate-500">Owner</span>
+                        <span class="text-slate-400">{{ item.uploaded_by.username }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider">
+                        <span class="text-slate-500">Added</span>
+                        <span class="text-slate-400">{{ item.created_at|date:"M d" }}</span>
+                    </div>
+                </div>
+                <div class="pt-4 mt-4 border-t border-white/5">
+                    <a href="{% url 'repair_item' item.pk %}"
+                        class="btn-accent w-full text-center !py-3 !text-xs italic font-black uppercase tracking-widest shadow-lg shadow-accent/20">
+                        🔧 Complete Repair
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-12 text-center glass-card">
+                <div
+                    class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-accent/20">
+                    <svg class="h-8 w-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <p class="text-slate-500 italic font-bold uppercase tracking-widest text-xs">Workbench is clear. All
+                    caught up!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Completed Repairs -->
+    <div>
+        <div class="flex items-center gap-4 mb-6">
+            <h3 class="text-lg font-bold text-white italic">COMPLETED REPAIRS</h3>
+            <div class="h-[1px] flex-1 bg-white/5"></div>
+        </div>
+        <div class="glass-card space-y-3">
+            {% for item in repaired %}
+            <div
+                class="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
+                <div class="w-2 h-2 rounded-full bg-accent shrink-0"></div>
+                <img src="{{ item.image.url }}"
+                    class="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0" alt="{{ item.title }}">
+                <div class="flex-1 min-w-0">
+                    <p class="font-black text-white italic group-hover:text-accent transition-colors truncate">{{ item.title }}</p>
+                    <p class="text-[10px] text-slate-500 font-medium uppercase">Owner: {{ item.uploaded_by.username }}
+                    </p>
+                </div>
+                <span class="status-badge bg-accent/10 text-accent text-[9px]">Repaired ✓</span>
+            </div>
+            {% empty %}
+            <p class="text-slate-600 italic text-sm text-center py-6">No completed repairs yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'core/base.html' %}
+{% block title %}Delivery Management | E-Fix Hub{% endblock %}
+{% block page_title %}Delivery Log{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tight">DELIVERY LOG</h1>
+            <p class="text-slate-400">Manage all final product deliveries to buyers.</p>
+        </div>
+    </div>
+
+    <!-- Active Delivery Deliveries -->
+    <div class="glass-card">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-xl font-bold text-white italic">FINAL DELIVERIES</h3>
+            <div class="h-[1px] flex-1 bg-white/5 mx-6"></div>
+            <span class="text-[10px] font-black bg-info/10 text-info px-3 py-1 rounded-full">{{ all_deliveries.count }}
+                Active Tasks</span>
+        </div>
+        <div class="space-y-4">
+            {% for order in all_deliveries %}
+            <div
+                class="flex flex-col md:flex-row items-center gap-6 p-6 bg-white/5 border border-white/5 rounded-2xl hover:border-info/30 hover:bg-white/10 transition-all group">
+                <img src="{{ order.product.display_image.url }}"
+                    class="w-20 h-20 rounded-xl object-cover border border-white/10 shrink-0" alt="">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-4 mb-2">
+                        <h4 class="text-lg font-black text-white italic group-hover:text-accent transition-colors">Order
+                            #{{ order.id }} - {{ order.product.linked_item.title }}</h4>
+                        <span class="status-badge bg-info/10 text-info text-[9px]">{{ order.status }}</span>
+                    </div>
+                    <div class="flex items-start gap-2 text-slate-400 text-sm">
+                        <svg class="h-4 w-4 text-info shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                        <p class="leading-relaxed text-xs">{{ order.shipping_address|default:"Buyer address not provided" }}</p>
+                    </div>
+                    <p class="text-[10px] text-slate-600 font-black uppercase mt-2">Buyer: {{ order.buyer.username }} •
+                        {{ order.shipping_phone|default:"No phone" }}</p>
+                </div>
+                {% if order.status == 'out_for_delivery' %}
+                <a href="{% url 'mark_delivered' order.pk %}"
+                    class="btn-accent !py-3 !px-6 !text-xs italic font-black uppercase tracking-widest shrink-0 shadow-lg shadow-accent/20">
+                    ✓ Finalize Delivery
+                </a>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="py-12 text-center">
+                <p class="text-slate-600 font-bold italic tracking-widest text-xs uppercase">No active deliveries
+                    assigned.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,520 @@
+{% extends 'core/base.html' %}
+{% block title %}Asset Detail | E-Fix Hub{% endblock %}
+{% block page_title %}Asset Strategic Intelligence{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 animate-fade-in">
+    <!-- Header -->
+    <div class="flex items-center gap-6 mb-8">
+        <a href="javascript:history.back()"
+            class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-accent hover:border-accent transition-all shadow-lg hover:shadow-accent/20">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tighter uppercase">ASSET INTELLIGENCE</h1>
+            <p class="text-slate-500 font-medium tracking-tight">System Serial ID: <span class="text-accent">#EFH-{{ item.id|stringformat:"05d" }}</span></p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Primary Asset Data -->
+        <div class="lg:col-span-1 space-y-8">
+            <div class="glass-card overflow-hidden group">
+                <div class="relative h-64 overflow-hidden rounded-2xl mb-6 border border-white/10 shadow-2xl">
+                    <img src="{{ item.image.url }}"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                        <div>
+                            <span
+                                class="text-[10px] font-black bg-accent text-white px-3 py-1 rounded-full uppercase italic tracking-widest">{{ item.get_category_display }}</span>
+                            <h2 class="text-xl font-black text-white italic mt-2">{{ item.title }}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Lifecycle
+                            Phase</span>
+                        <span class="status-badge !text-[10px] shadow-lg
+                            {% if item.status == 'uploaded' %} bg-slate-900 text-slate-300
+                            {% elif item.status == 'inspection_pending' %} bg-sky-600 text-white
+                            {% elif item.status == 'agent_assigned' or item.status == 'collected' %} bg-indigo-600 text-white
+                            {% elif item.status == 'mechanic_assigned' or item.status == 'repairing' %} bg-amber-600 text-white
+                            {% elif item.status == 'repair_completed' or item.status == 'awaiting_admin_approval' %} bg-emerald-600 text-white
+                            {% elif item.status == 'published_in_store' %} bg-purple-600 text-white
+                            {% elif item.status == 'ordered' or item.status == 'delivered' %} bg-rose-600 text-white
+                            {% else %} bg-slate-800 text-slate-400 {% endif %}">
+                            {{ item.get_status_display|upper }}
+                        </span>
+                    </div>
+
+                    <div class="bg-white/5 rounded-2xl p-6 border border-white/5 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-accent/5 blur-xl"></div>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Tactical
+                            Telemetry</p>
+                        <ul class="space-y-4">
+                            <li class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <span class="text-xs text-slate-400 font-medium">Core Condition</span>
+                                <span class="text-xs text-white font-bold italic">{{ item.condition|default:"Standard Salvage" }}</span>
+                            </li>
+                            <li class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <span class="text-xs text-slate-400 font-medium">Discovery District</span>
+                                <span class="text-xs text-white font-bold">{{ item.collection_district|default:item.uploaded_by.district }}</span>
+                            </li>
+                            <li class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <span class="text-xs text-slate-400 font-medium">Origin Node</span>
+                                <span class="text-xs text-accent font-black cursor-pointer hover:underline">@{{ item.uploaded_by.username }}</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span class="text-xs text-slate-400 font-medium">Initial Log</span>
+                                <span class="text-xs text-slate-500 font-mono italic">{{ item.created_at|date:"M d, Y H:i" }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operational Flow: Reverse Engineering Timeline -->
+            <div class="glass-card">
+                <h3
+                    class="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2 italic">
+                    LIFECYCLE TIMELINE</h3>
+                <div
+                    class="space-y-6 relative before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/5">
+                    <!-- Steps -->
+                    <div class="flex items-center gap-6 relative">
+                        <div
+                            class="w-5 h-5 rounded-full z-10 {% if item.created_at %}bg-accent shadow-[0_0_8px_rgba(16,185,129,0.5)]{% else %}bg-white/10{% endif %}">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white/80 uppercase">Discovery & Upload</p>
+                            <p class="text-[9px] text-slate-500 font-mono">{{ item.created_at|date:"M d, H:i"|default:"Pending" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6 relative">
+                        <div
+                            class="w-5 h-5 rounded-full z-10 {% if item.approved_at %}bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.5)]{% else %}bg-white/10{% endif %}">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white/80 uppercase">System Approval</p>
+                            <p class="text-[9px] text-slate-500 font-mono">{{ item.approved_at|date:"M d, H:i"|default:"Awaiting Review" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6 relative">
+                        <div
+                            class="w-5 h-5 rounded-full z-10 {% if item.collected_at %}bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]{% else %}bg-white/10{% endif %}">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white/80 uppercase">Field Collection</p>
+                            <p class="text-[9px] text-slate-500 font-mono">{{ item.collected_at|date:"M d, H:i"|default:"Awaiting Agent" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6 relative">
+                        <div
+                            class="w-5 h-5 rounded-full z-10 {% if item.restored_at %}bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]{% else %}bg-white/10{% endif %}">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white/80 uppercase">Engineering Restoration</p>
+                            <p class="text-[9px] text-slate-500 font-mono">{{ item.restored_at|date:"M d, H:i"|default:"In Workshop" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6 relative">
+                        <div
+                            class="w-5 h-5 rounded-full z-10 {% if item.published_at %}bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]{% else %}bg-white/10{% endif %}">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white/80 uppercase">Market Injection</p>
+                            <p class="text-[9px] text-slate-500 font-mono">{{ item.published_at|date:"M d, H:i"|default:"Pending Listing" }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6 relative">
+                        <div
+                            class="w-5 h-5 rounded-full z-10 {% if item.sold_at %}bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]{% else %}bg-white/10{% endif %}">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white/80 uppercase">Asset Liquidation</p>
+                            <p class="text-[9px] text-slate-500 font-mono">{{ item.sold_at|date:"M d, H:i"|default:"Waiting for Buyer" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Engineering Logs & Market Data -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Strategic Nodal Custody Chain (Who is handling the product) -->
+            <div class="glass-card !bg-primary/40 border-l-4 border-l-accent group">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">CUSTODY CHAIN TELEMETRY
+                    </h3>
+                    <div
+                        class="px-3 py-1 bg-accent/10 border border-accent/20 rounded-lg text-[9px] font-black text-accent uppercase tracking-widest">
+                        Active Monitoring</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <!-- Stage 1: Origin (Customer) -->
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 relative overflow-hidden group/node">
+                        <div class="absolute top-0 right-0 w-8 h-8 bg-blue-500/5 blur-lg"></div>
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Origin Node</p>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <a href="{% url 'user_detail' item.uploaded_by.pk %}"
+                                    class="text-sm font-bold text-white block hover:text-accent transition-colors">@{{ item.uploaded_by.username }}</a>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">CUSTOMER</p>
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-slate-600 font-mono italic">
+                            Status: <span class="text-slate-400 uppercase">Released</span>
+                        </div>
+                    </div>
+
+                    <!-- Stage 2: Logistics (Agent) -->
+                    <div
+                        class="p-4 bg-white/5 rounded-2xl border border-white/5 relative overflow-hidden group/node {% if item.status == 'agent_assigned' or item.status == 'collected' %} border-indigo-500/30 bg-indigo-500/5 shadow-lg shadow-indigo-500/5 {% endif %}">
+                        {% if item.status == 'agent_assigned' or item.status == 'collected' %}
+                        <div class="absolute top-0 right-0 w-2 h-2 rounded-full bg-indigo-500 animate-pulse mt-2 mr-2">
+                        </div>
+                        {% endif %}
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Logistics Node
+                        </p>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                {% if item.assigned_agent %}
+                                <a href="{% url 'user_detail' item.assigned_agent.pk %}"
+                                    class="text-sm font-bold text-white block hover:text-accent transition-colors">@{{ item.assigned_agent.username }}</a>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">FIELD AGENT
+                                </p>
+                                {% else %}
+                                <p class="text-sm font-bold text-slate-700 italic">Not Assigned</p>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">FIELD AGENT
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-slate-600 font-mono italic">
+                            Status:
+                            <span
+                                class="{% if item.status == 'agent_assigned' or item.status == 'collected' %} text-indigo-400 {% else %} text-slate-400 {% endif %} uppercase">
+                                {% if item.status == 'agent_assigned' %}DISPATCHED
+                                {% elif item.status == 'collected' %}CUSTODY OBTAINED
+                                {% elif item.assigned_agent %}STANDBY
+                                {% else %}VACANT{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Stage 3: Restoration (Mechanic) -->
+                    <div
+                        class="p-4 bg-white/5 rounded-2xl border border-white/5 relative overflow-hidden group/node {% if item.status == 'mechanic_assigned' or item.status == 'repairing' or item.status == 'repair_completed' %} border-amber-500/30 bg-amber-500/5 shadow-lg shadow-amber-500/5 {% endif %}">
+                        {% if item.status == 'mechanic_assigned' or item.status == 'repairing' %}
+                        <div class="absolute top-0 right-0 w-2 h-2 rounded-full bg-amber-500 animate-pulse mt-2 mr-2">
+                        </div>
+                        {% endif %}
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Restoration Node
+                        </p>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                </svg>
+                            </div>
+                            <div>
+                                {% if item.assigned_mechanic %}
+                                <a href="{% url 'user_detail' item.assigned_mechanic.pk %}"
+                                    class="text-sm font-bold text-white block hover:text-accent transition-colors">@{{ item.assigned_mechanic.username }}</a>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">ENGINEER</p>
+                                {% else %}
+                                <p class="text-sm font-bold text-slate-700 italic">Not Assigned</p>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">ENGINEER</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-slate-600 font-mono italic">
+                            Status:
+                            <span
+                                class="{% if item.status == 'mechanic_assigned' or item.status == 'repairing' or item.status == 'repair_completed' %} text-amber-400 {% else %} text-slate-400 {% endif %} uppercase">
+                                {% if item.status == 'mechanic_assigned' %}QUEUED
+                                {% elif item.status == 'repairing' %}ACTIVE REPAIR
+                                {% elif item.status == 'repair_completed' %}REPAIR COMPLETE
+                                {% elif item.assigned_mechanic %}STANDBY
+                                {% else %}VACANT{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Stage 4: Marketplace (Store) -->
+                    <div
+                        class="p-4 bg-white/5 rounded-2xl border border-white/5 relative overflow-hidden group/node {% if item.status == 'published_in_store' or item.status == 'ordered' or item.status == 'delivered' %} border-emerald-500/30 bg-emerald-500/5 shadow-lg shadow-emerald-500/5 {% endif %}">
+                        {% if item.status == 'published_in_store' %}
+                        <div class="absolute top-0 right-0 w-2 h-2 rounded-full bg-emerald-500 animate-pulse mt-2 mr-2">
+                        </div>
+                        {% endif %}
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-3">Market Node</p>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-white block">E-Fix Central</p>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">DISTRIBUTION
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-slate-600 font-mono italic">
+                            Status:
+                            <span
+                                class="{% if item.status == 'published_in_store' or item.status == 'ordered' or item.status == 'delivered' %} text-emerald-400 {% else %} text-slate-400 {% endif %} uppercase">
+                                {% if item.status == 'published_in_store' %}LIVE ON HUB
+                                {% elif item.status == 'ordered' %}TRANSITIONING
+                                {% elif item.status == 'delivered' %}LIQUIDATED
+                                {% else %}PENDING{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Tactical Actions -->
+                <div class="mt-8 pt-8 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% if not item.assigned_agent and item.status == 'inspection_pending' %}
+                    <a href="{% url 'assign_agent' item.pk %}"
+                        class="btn-accent text-center !py-4 font-black tracking-[0.2em] uppercase bg-indigo-600 hover:bg-indigo-500 shadow-xl italic">
+                        Initialize Logistics Dispatch
+                    </a>
+                    {% endif %}
+
+                    {% if not item.assigned_mechanic and item.status == 'collected' %}
+                    <a href="{% url 'assign_mechanic' item.pk %}"
+                        class="btn-accent text-center !py-4 font-black tracking-[0.2em] uppercase bg-amber-600 hover:bg-amber-500 shadow-xl italic">
+                        Establish Engineering Node
+                    </a>
+                    {% endif %}
+
+                    {% if item.status == 'repair_completed' or item.status == 'awaiting_admin_approval' %}
+                    <div class="md:col-span-2 flex gap-4">
+                        <a href="{% url 'publish_product' item.pk %}"
+                            class="flex-1 btn-accent text-center !py-4 font-black tracking-[0.2em] uppercase bg-emerald-600 hover:bg-emerald-500 shadow-xl italic">
+                            Inject into Global Market
+                        </a>
+                        <a href="{% url 'request_rework' item.pk %}"
+                            class="px-8 py-4 bg-rose-600/10 border border-rose-500/20 text-rose-500 rounded-2xl text-[10px] font-black uppercase hover:bg-rose-600/20 transition-all italic">
+                            Reject & Rework
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Restoration Blueprint -->
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xl font-bold text-white italic">RESTORATION BLUEPRINT</h3>
+                    <div class="h-[1px] flex-1 bg-white/5 mx-6"></div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] font-black text-accent uppercase tracking-widest">Progress: {{ item.repair_progress_percentage }}%</span>
+                        <div class="w-48 h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                            <div class="h-full bg-accent transition-all duration-1000 shadow-[0_0_15px_rgba(16,185,129,0.4)] progress-bar"
+                                data-progress="{{ item.repair_progress_percentage }}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Field
+                                Transmission</p>
+                            <div
+                                class="p-5 bg-black/40 rounded-2xl border border-white/10 text-slate-300 text-xs italic leading-relaxed shadow-inner">
+                                "{{ item.description }}"
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">
+                                Pickup Target Coordinates</p>
+                            <div class="p-4 bg-white/5 rounded-2xl border border-white/5 flex items-start gap-3">
+                                <svg class="h-4 w-4 text-accent/60 mt-0.5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                </svg>
+                                <p class="text-xs text-white font-medium italic leading-relaxed">
+                                    {{ item.collection_address|default:"Nodal Storage Hub" }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">
+                                Hardware Modification Log</p>
+                            <div class="p-5 bg-accent/5 rounded-2xl border border-accent/20 relative">
+                                <div class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-accent animate-pulse">
+                                </div>
+                                <p class="text-[10px] font-black text-accent uppercase mb-3">Audit Manifest</p>
+                                <p class="text-xs text-white leading-relaxed italic">{{ item.parts_replaced|default:"No active modifications registered." }}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Strategic ETA
+                                </p>
+                                <p class="text-xs font-bold text-white italic">
+                                    {% if item.estimated_completion_date %}
+                                    {{ item.estimated_completion_date|date:"M d, Y" }}
+                                    {% else %}Waitlist{% endif %}
+                                </p>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Asset Class
+                                </p>
+                                <p class="text-xs font-bold text-accent italic">
+                                    Tier-{% if item.repair_progress_percentage > 50 %}A+{% else %}B{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Deployment Module -->
+            {% if product %}
+            <div class="glass-card relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-transparent pointer-events-none">
+                </div>
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xl font-bold text-white italic tracking-tight">MARKETPLACE DEPLOYMENT</h3>
+                    <div class="flex items-center gap-4">
+                        {% if product.is_sold %}
+                        <span
+                            class="px-4 py-1.5 bg-rose-500/20 text-rose-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-rose-500/20 shadow-lg shadow-rose-500/10">LIQUIDATED</span>
+                        {% else %}
+                        <span
+                            class="px-4 py-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-500/20 shadow-lg shadow-emerald-500/10 animate-pulse">LIVE
+                            ON HUB</span>
+                        {% endif %}
+                        <div class="text-3xl font-black text-white italic tracking-tighter">₹{{ product.price|floatformat:2 }}</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="md:col-span-1 border-r border-white/5 pr-6 space-y-6">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-600 uppercase mb-3">Inventory Statistics</p>
+                            <div class="space-y-4">
+                                <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <span class="text-[9px] text-slate-500 block uppercase">Stock Count</span>
+                                    <span class="text-sm text-white font-black">{{ product.stock }} Units</span>
+                                </div>
+                                <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <span class="text-[9px] text-slate-500 block uppercase">Status</span>
+                                    <span class="text-sm text-white font-black italic">{% if product.is_sold %}SOLD
+                                        OUT{% else %}ACTIVE{% endif %}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <p class="text-[10px] font-black text-slate-600 uppercase mb-4">Transmission Logs (Orders)</p>
+                        <div class="space-y-3">
+                            {% for order in orders %}
+                            <div
+                                class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-accent/40 transition-all group/order">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-xs font-black italic group-hover/order:scale-110 transition-transform">
+                                        #{{ order.id }}
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-black text-white italic">Acquired by @{{ order.buyer.username }}</p>
+                                        <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest">{{ order.shipping_name }} | {{ order.created_at|date:"M d, Y" }}</p>
+                                    </div>
+                                </div>
+                                <span
+                                    class="text-[9px] font-black {% if order.status == 'delivered' %}bg-emerald-600 text-white{% else %}bg-sky-600 text-white{% endif %} px-3 py-1.5 rounded-lg shadow-lg">{{ order.get_status_display|upper }}</span>
+                            </div>
+                            {% empty %}
+                            <div
+                                class="py-16 text-center border-2 border-dashed border-white/5 rounded-3xl group-hover:border-accent/20 transition-colors">
+                                <div
+                                    class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-700">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                </div>
+                                <p class="text-slate-600 italic text-[10px] font-black uppercase tracking-[0.3em]">No
+                                    Purchase Signals</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="glass-card border-dashed border-2 border-white/5 hover:border-accent/20 transition-all">
+                <div class="py-24 text-center">
+                    <div
+                        class="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5 text-slate-800 animate-pulse">
+                        <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-black text-slate-600 italic mb-4 uppercase tracking-tighter">Awaiting Nodal
+                        Maturation</h4>
+                    <p
+                        class="text-slate-500 text-xs font-black uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
+                        This asset is currently in active restoration. Market listing will be enabled upon engineering
+                        sign-off.</p>
+
+                    {% if item.status == 'repair_completed' or item.status == 'awaiting_admin_approval' %}
+                    <div class="mt-10">
+                        <a href="{% url 'publish_product' item.pk %}"
+                            class="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all shadow-2xl shadow-emerald-600/30 italic">
+                            🚀 Initiate Market Injection
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // System Initialization for Progress Metrics
+    document.querySelectorAll('.progress-bar').forEach(function (bar) {
+        bar.style.width = (bar.dataset.progress || 0) + '%';
+    });
+</script>
+{% endblock %}

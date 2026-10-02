@@ -1,0 +1,166 @@
+<aside
+    class="w-[260px] bg-[#111827] min-h-screen hidden lg:flex flex-col border-r border-white/5 sticky top-0 shrink-0">
+    <div class="p-8 border-b border-white/5">
+        <a href="/" class="flex items-center gap-3 group">
+            <div
+                class="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
+                <span class="text-2xl text-white">⚡</span>
+            </div>
+            <span class="text-xl font-black tracking-tight text-white italic">EFIX HUB</span>
+        </a>
+    </div>
+
+    <nav class="flex-1 py-6 overflow-y-auto">
+        <div class="px-6 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Main Menu</div>
+        <a href="{% url 'dashboard' %}"
+            class="sidebar-link {% if request.resolver_match.url_name in 'admin_dashboard,customer_dashboard,agent_dashboard,mechanic_dashboard,dashboard' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Dashboard
+        </a>
+
+        {% if user.role == 'ADMIN' %}
+        <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Administration</div>
+        <a href="{% url 'manage_users' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Manage Users
+        </a>
+        <a href="{% url 'manage_products' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'manage_products' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Manage Products
+        </a>
+        <a href="{% url 'published_products' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'published_products' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            Published Products
+        </a>
+        <a href="{% url 'orders' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'orders' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Orders
+        </a>
+        <a href="{% url 'admin_mechanic_payments' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'admin_mechanic_payments' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Mechanic Payouts
+        </a>
+        <a href="{% url 'activity_logs' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'activity_logs' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Activity Logs
+        </a>
+        {% endif %}
+
+        {% if user.role == 'CUSTOMER' %}
+        <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">My Account</div>
+        <a href="{% url 'item_upload' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'item_upload' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Upload Item
+        </a>
+        <a href="{% url 'my_products' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'my_products' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            My Products
+        </a>
+        <a href="{% url 'my_orders' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'my_orders' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            My Orders
+        </a>
+        {% endif %}
+
+        {% if user.role == 'AGENT' %}
+        <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Logistics</div>
+        <a href="{% url 'assigned_collections' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'assigned_collections' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+            </svg>
+            Assigned Collections
+        </a>
+        <a href="{% url 'delivery_management' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'delivery_management' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            Delivery Management
+        </a>
+        {% endif %}
+
+        {% if user.role == 'MECHANIC' %}
+        <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Workshop</div>
+        <a href="{% url 'assigned_repairs' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'assigned_repairs' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Assigned Repairs
+        </a>
+        {% endif %}
+
+        <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Explore</div>
+        <a href="{% url 'browse_store' %}"
+            class="sidebar-link {% if request.resolver_match.url_name == 'browse_store' %}active{% endif %}">
+            <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Refurbished Store
+        </a>
+    </nav>
+
+    <div class="p-6 border-t border-white/5 bg-white/5">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold">
+                {{ user.username|first|upper }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-white truncate">{{ user.username }}</p>
+                <p class="text-[10px] text-accent uppercase font-black">{{ user.role }}</p>
+            </div>
+            <a href="{% url 'logout' %}" title="Logout" class="text-slate-500 hover:text-red-400 transition-colors">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+            </a>
+        </div>
+    </div>
+</aside>

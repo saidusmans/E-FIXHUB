@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Activity Logs | Enterprise Audit{% endblock %}
+{% block page_title %}High-Fidelity Signal Audit{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <div class="flex items-end justify-between">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tighter">SYSTEM TELEMETRY</h1>
+            <p class="text-slate-500 font-medium mt-1">Chronological record of all platform interactions.</p>
+        </div>
+    </div>
+
+    <div class="glass-card !p-0 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-white/5 border-b border-white/5">
+                    <th class="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Timestamp</th>
+                    <th class="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Operator</th>
+                    <th class="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">Action
+                        Protocol</th>
+                    <th class="px-8 py-6 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                        Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+                {% for log in logs %}
+                <tr class="hover:bg-white/5 transition-colors group">
+                    <td class="px-8 py-6 text-sm text-slate-400 font-medium">{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                    <td class="px-8 py-6">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent font-bold text-xs">
+                                {{ log.user.username|first|upper }}</div>
+                            <span class="text-white font-bold">{{ log.user.username }}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-6 text-sm text-slate-300">{{ log.action }}</td>
+                    <td class="px-8 py-6 text-right">
+                        <span
+                            class="text-[9px] font-black text-accent bg-accent/10 px-2 py-1 rounded uppercase tracking-widest border border-accent/20">Verified</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-8 py-20 text-center text-slate-600 italic">No telemetry data detected.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-between items-center text-xs text-slate-500 font-bold px-4">
+        <p>Showing {{ logs.start_index }} to {{ logs.end_index }} of {{ logs.paginator.count }} events</p>
+        <div class="flex gap-4">
+            {% if logs.has_previous %}
+            <a href="?page={{ logs.previous_page_number }}"
+                class="hover:text-white transition-all uppercase tracking-widest text-accent">← Previous Path</a>
+            {% else %}
+            <span class="opacity-30 uppercase tracking-widest cursor-not-allowed">← Previous Path</span>
+            {% endif %}
+
+            {% if logs.has_next %}
+            <a href="?page={{ logs.next_page_number }}"
+                class="hover:text-white transition-all uppercase tracking-widest text-accent">Next Path →</a>
+            {% else %}
+            <span class="opacity-30 uppercase tracking-widest cursor-not-allowed">Next Path →</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

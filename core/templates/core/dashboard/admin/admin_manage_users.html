@@ -1,0 +1,218 @@
+{% extends 'core/base.html' %}
+{% block title %}Manage Users | E-Fix Hub{% endblock %}
+{% block page_title %}User Registry{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tight">USER REGISTRY</h1>
+            <p class="text-slate-500 font-medium">All registered platform members and their roles.</p>
+        </div>
+        <span class="glass-card !py-2 !px-6 text-xs font-black uppercase tracking-widest text-accent border-accent/20">
+            {{ users.count }} Members
+        </span>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <button onclick="filterUsers('CUSTOMER')"
+            class="glass-card !bg-primary border-l-4 border-l-accent text-left hover:scale-[1.02] transition-transform">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Customers</p>
+            <div class="text-3xl font-black text-accent italic">{{ total_customers }}</div>
+        </button>
+        <button onclick="filterUsers('AGENT')"
+            class="glass-card !bg-primary border-l-4 border-l-info text-left hover:scale-[1.02] transition-transform">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Agents</p>
+            <div class="text-3xl font-black text-info italic">{{ total_agents }}</div>
+        </button>
+        <button onclick="filterUsers('MECHANIC')"
+            class="glass-card !bg-primary border-l-4 border-l-warning text-left hover:scale-[1.02] transition-transform">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Mechanics</p>
+            <div class="text-3xl font-black text-warning italic">{{ total_mechanics }}</div>
+        </button>
+        <button onclick="filterUsers('ALL')"
+            class="glass-card !bg-primary border-l-4 border-l-slate-500 text-left hover:scale-[1.02] transition-transform">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Total</p>
+            <div class="text-3xl font-black text-white italic">{{ users.count }}</div>
+        </button>
+    </div>
+
+    <div class="glass-card overflow-hidden">
+        <div class="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+            <div class="flex items-center gap-4">
+                <h3 class="text-xl font-bold text-white italic">MEMBER REPOSITORY</h3>
+                <div class="flex bg-white/5 p-1 rounded-xl border border-white/5">
+                    <button onclick="filterUsers('ALL')"
+                        class="role-tab active-tab px-4 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all"
+                        data-role="ALL">All</button>
+                    <button onclick="filterUsers('CUSTOMER')"
+                        class="role-tab px-4 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all text-slate-500"
+                        data-role="CUSTOMER">Customers</button>
+                    <button onclick="filterUsers('AGENT')"
+                        class="role-tab px-4 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all text-slate-500"
+                        data-role="AGENT">Agents</button>
+                    <button onclick="filterUsers('MECHANIC')"
+                        class="role-tab px-4 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all text-slate-500"
+                        data-role="MECHANIC">Mechanics</button>
+                </div>
+            </div>
+            <span class="text-[10px] font-black bg-white/10 px-3 py-1 rounded-full uppercase tracking-tighter"
+                id="record-count">{{ users.count }} records</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr
+                        class="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5">
+                        <th class="pb-4 pr-4">Member</th>
+                        <th class="pb-4 pr-4">Email / Phone</th>
+                        <th class="pb-4 pr-4">Location</th>
+                        <th class="pb-4 pr-4">Role</th>
+                        <th class="pb-4 pr-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5" id="user-table-body">
+                    {% for u in users %}
+                    <tr class="hover:bg-white/5 transition-colors group user-row" data-role="{{ u.role }}">
+                        <td class="py-4 pr-4">
+                            <div class="flex items-center gap-3">
+                                <div class="relative">
+                                    <div
+                                        class="w-9 h-9 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent font-black text-sm shrink-0">
+                                        {{ u.username|first|upper }}
+                                    </div>
+                                    {% if u.is_verified %}
+                                    <div
+                                        class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-accent rounded-full border-2 border-primary flex items-center justify-center animate-bounce-slow">
+                                        <svg class="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="max-w-[150px]">
+                                    <div class="flex items-center gap-2">
+                                        <p
+                                            class="font-bold text-white text-sm group-hover:text-accent transition-colors truncate">
+                                            {{ u.username }}
+                                        </p>
+                                        {% if u.is_verified %}
+                                        <span title="Verified Professional" class="text-accent">
+                                            <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                        {% endif %}
+                                        {% if not u.is_active %}
+                                        <span
+                                            class="px-2 py-0.5 rounded bg-danger/20 text-danger text-[8px] font-black uppercase tracking-tighter">Suspended</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-[10px] text-slate-600 font-medium truncate">{{ u.first_name }} {{ u.last_name }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 pr-4">
+                            <p class="text-white text-xs font-bold">{{ u.email|default:"—" }}</p>
+                            <p class="text-[10px] text-slate-500 mt-1">{{ u.phone|default:"—" }}</p>
+                        </td>
+                        <td class="py-4 pr-4">
+                            <p class="text-white text-xs font-medium italic">{{ u.state|default:"—" }}</p>
+                            <p class="text-[10px] text-slate-600 uppercase tracking-tighter">{{ u.district|default:"—" }}</p>
+                        </td>
+                        <td class="py-4 pr-4">
+                            <span
+                                class="status-badge {% if u.role == 'ADMIN' %}bg-danger/10 text-danger{% elif u.role == 'AGENT' %}bg-info/10 text-info{% elif u.role == 'MECHANIC' %}bg-warning/10 text-warning{% else %}bg-accent/10 text-accent{% endif %}">
+                                {{ u.get_role_display }}
+                            </span>
+                        </td>
+                        <td class="py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{% url 'user_detail' u.pk %}"
+                                    class="inline-flex h-8 px-4 items-center bg-white/5 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white hover:bg-accent hover:border-accent transition-all">
+                                    View Repository
+                                </a>
+                                {% if u.role != 'ADMIN' %}
+                                <form method="POST" action="{% url 'delete_user' u.pk %}"
+                                    onsubmit="return confirm('WARNING: Are you sure you want to purge user {{ u.username }} from the system?')">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                        class="inline-flex h-8 px-4 items-center bg-danger/10 border border-danger/20 rounded-lg text-[10px] font-black uppercase tracking-widest text-danger hover:bg-danger hover:text-white transition-all">
+                                        Purge
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5"
+                            class="py-16 text-center text-slate-600 italic font-bold uppercase tracking-widest text-xs">
+                            No telemetry found for this segment.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterUsers(role) {
+        const rows = document.querySelectorAll('.user-row');
+        const tabs = document.querySelectorAll('.role-tab');
+        let visibleCount = 0;
+
+        tabs.forEach(tab => {
+            if (tab.dataset.role === role) {
+                tab.classList.add('active-tab', 'text-white');
+                tab.classList.remove('text-slate-500');
+            } else {
+                tab.classList.remove('active-tab', 'text-white');
+                tab.classList.add('text-slate-500');
+            }
+        });
+
+        rows.forEach(row => {
+            if (role === 'ALL' || row.dataset.role === role) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('record-count').innerText = `${visibleCount} records`;
+    }
+</script>
+
+<style>
+    .active-tab {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981 !important;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .animate-bounce-slow {
+        animation: bounce 3s infinite;
+    }
+
+    @keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-3px);
+        }
+    }
+</style>
+{% endblock %}

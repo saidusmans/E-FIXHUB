@@ -1,0 +1,198 @@
+{% extends 'core/base.html' %}
+{% block title %}Assign Agent | E-Fix Hub{% endblock %}
+{% block page_title %}Logistical Dispatch{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto animate-fade-in pb-20">
+    <div class="flex items-center gap-4 mb-12">
+        <a href="{% url 'manage_products' %}"
+            class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-accent hover:border-accent transition-all">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <h1 class="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">LOGISTICS DISPATCH
+        </h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Item Overview -->
+        <div class="glass-card flex flex-col justify-between overflow-hidden relative">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-accent/5 blur-3xl"></div>
+            <div>
+                <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-8 italic">ASSET SPECIFICATIONS
+                </h3>
+                <div class="rounded-2xl overflow-hidden mb-6 border border-white/10 aspect-video">
+                    <img src="{% if is_delivery %}{{ order.product.display_image.url }}{% else %}{{ item.image.url }}{% endif %}"
+                        class="w-full h-full object-cover">
+                </div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-black text-white italic tracking-tight uppercase">
+                        {% if is_delivery %}{{ order.product.linked_item.title }}{% else %}{{ item.title }}{% endif %}
+                    </h2>
+                    <span
+                        class="text-[10px] bg-accent/20 text-accent px-3 py-1 rounded-full font-black uppercase italic">
+                        {% if is_delivery %}{{ order.product.linked_item.get_category_display }}{% else %}{{ item.get_category_display }}{% endif %}
+                    </span>
+                </div>
+
+                <div class="space-y-4">
+                    {% if is_delivery %}
+                    <!-- Pick-up Origin for Delivery -->
+                    <div
+                        class="flex items-start gap-3 p-4 bg-white/5 rounded-2xl border border-dashed border-accent/30">
+                        <svg class="h-5 w-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 uppercase italic mb-1">Collection Origin
+                                (Pick-up)</p>
+                            <p class="text-white font-bold text-sm">
+                                {% if order.product.linked_item.assigned_mechanic and order.product.linked_item.status == 'repair_completed' %}
+                                Workshop @{{ order.product.linked_item.assigned_mechanic.username }}
+                                {% else %}
+                                Central E-Fix Hub
+                                {% endif %}
+                            </p>
+                            <p class="text-[9px] text-slate-400 italic">
+                                {% if order.product.linked_item.assigned_mechanic and not order.product.linked_item.status == 'Collected from Mechanic' %}
+                                {{ order.product.linked_item.assigned_mechanic.mechanic_profile.workshop_address }}
+                                {% else %}
+                                Standard Regional Distribution Center
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="flex items-start gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <svg class="h-5 w-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 uppercase italic mb-1">
+                                {% if is_delivery %}Deployment Target{% elif is_retrieval %}Retrieval Source
+                                (Workshop){% else %}Collection Target (District){% endif %}
+                            </p>
+                            <p class="text-white font-bold text-sm">
+                                {% if is_delivery %}{{ order.shipping_name }}{% elif is_retrieval %}Workshop @{{ item.assigned_mechanic.username }}{% else %}{{ item.collection_district|default:item.uploaded_by.district }}{% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <svg class="h-5 w-5 text-info shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 uppercase italic mb-1">
+                                {% if is_delivery %}Recipient Coordinates{% elif is_retrieval %}Industrial Workshop
+                                Address{% else %}Static Pickup Address{% endif %}
+                            </p>
+                            <p class="text-sm font-medium leading-relaxed text-slate-300 italic">
+                                {% if is_delivery %}{{ order.shipping_address }}{% elif is_retrieval %}{{ item.assigned_mechanic.mechanic_profile.workshop_address }}{% else %}{{ item.collection_address|default:item.uploaded_by.address }}{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-600 mt-8 font-black uppercase italic">
+                {% if is_delivery %}Buyer: @{{ order.buyer.username|upper }}{% else %}Source Profile: @{{ item.uploaded_by.username|upper }}{% endif %}
+            </p>
+        </div>
+
+        <!-- Agent Selection -->
+        <div class="glass-card !bg-primary/40">
+            <h3 class="text-2xl font-black text-white italic tracking-tighter uppercase mb-2">Initialize Logistics</h3>
+            <p class="text-slate-500 text-xs font-medium mb-12">Select designated officer for physical asset transit.
+            </p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="space-y-8 mb-12">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-8 italic">DESIGNATED AGENT
+                        REGISTRY</h3>
+                    <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        {% for agent in agents %}
+                        <label class="block relative group cursor-pointer">
+                            <input type="radio" name="agent_id" value="{{ agent.id }}" class="peer absolute opacity-0"
+                                required>
+                            <div
+                                class="p-5 bg-white/5 border border-white/10 rounded-2xl peer-checked:bg-accent/10 peer-checked:border-accent flex items-center gap-4 transition-all hover:bg-white/10">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-black italic shadow-lg">
+                                    {{ agent.username|first|upper }}
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-white font-bold">{{ agent.username|upper }}</p>
+                                    <p class="text-[10px] text-slate-500 uppercase font-black">{{ agent.agent_profile.qualification|default:"Authorized Logistics Officer" }}</p>
+                                </div>
+                                <div
+                                    class="w-4 h-4 rounded-full border-2 border-white/10 flex items-center justify-center peer-checked:border-accent">
+                                    <div
+                                        class="w-1.5 h-1.5 bg-accent rounded-full scale-0 peer-checked:scale-100 transition-transform">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        {% empty %}
+                        <p class="text-slate-600 italic py-4 text-center">No agents currently available.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if not is_delivery and not is_retrieval %}
+                <div class="pt-8 border-t border-white/5">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-8 italic">PRE-ASSIGN
+                        RESTORATION ENGINEER</h3>
+                    <div class="space-y-3">
+                        {% for mechanic in mechanics %}
+                        <label class="block relative group cursor-pointer">
+                            <input type="radio" name="mechanic_id" value="{{ mechanic.id }}"
+                                class="peer absolute opacity-0" required>
+                            <div
+                                class="p-5 bg-white/5 border border-white/10 rounded-2xl peer-checked:bg-warning/10 peer-checked:border-warning flex items-center gap-4 transition-all hover:bg-white/10">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white font-black italic shadow-lg">
+                                    {{ mechanic.username|first|upper }}
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-white font-bold">{{ mechanic.username|upper }}</p>
+                                    <p class="text-[10px] text-slate-500 uppercase font-black">{{ mechanic.mechanic_profile.specialization|default:"Certified General Repair" }}
+                                    </p>
+                                </div>
+                                <div
+                                    class="w-4 h-4 rounded-full border-2 border-white/10 flex items-center justify-center peer-checked:border-warning">
+                                    <div
+                                        class="w-1.5 h-1.5 bg-warning rounded-full scale-0 peer-checked:scale-100 transition-transform">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        {% empty %}
+                        <p class="text-slate-600 italic py-4 text-center">No mechanics currently available.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="pt-8 space-y-4">
+                    <button type="submit"
+                        class="btn-accent w-full !py-4 italic font-black uppercase tracking-widest bg-gradient-to-r from-accent to-emerald-700 shadow-xl">
+                        {% if is_delivery %}AUTHORIZE DEPLOYMENT DISPATCH{% elif is_retrieval %}AUTHORIZE RETRIEVAL
+                        DISPATCH{% else %}AUTHORIZE DISPATCH & RESTORATION{% endif %}
+                    </button>
+                    <p class="text-center text-[9px] text-slate-600 font-bold uppercase tracking-widest italic">
+                        {% if is_delivery %}Agent will deliver unit to buyer's coordinates.{% elif is_retrieval %}Agent
+                        will collect unit from mechanic workshop.{% else %}Agent will deliver asset to selected
+                        engineer.{% endif %}
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

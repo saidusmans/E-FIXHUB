@@ -1,0 +1,246 @@
+{% extends 'core/base.html' %}
+{% block title %}Manage Products | E-Fix Hub{% endblock %}
+{% block page_title %}Asset Pipeline{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tight">ASSET PIPELINE</h1>
+            <p class="text-slate-500 font-medium tracking-tight">Technical monitor for all salvage units across
+                restoration nodes.</p>
+        </div>
+        <div class="flex flex-col md:flex-row items-end md:items-center gap-4">
+            <div class="relative w-full md:w-64">
+                <input type="text" id="asset-search" placeholder="Search Telemetry..." onkeyup="searchAssets()"
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-10 py-2.5 text-xs text-white focus:outline-none focus:border-accent transition-all placeholder:text-slate-700">
+                <svg class="h-4 w-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <span
+                class="glass-card !py-2.5 !px-6 text-xs font-black uppercase tracking-widest text-sky-400 border-sky-400/20">
+                {{ items.count }} Total Assets
+            </span>
+        </div>
+    </div>
+
+    <!-- Quick Status Filter -->
+    <div class="flex flex-wrap gap-2" id="filter-bar">
+        <button onclick="filterItems('all')"
+            class="filter-btn active-filter px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-accent text-accent transition-all"
+            data-filter="all">All</button>
+        <button onclick="filterItems('uploaded')"
+            class="filter-btn px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 text-slate-500 hover:border-white/30 hover:text-white transition-all"
+            data-filter="uploaded">New</button>
+        <button onclick="filterItems('inspection_pending')"
+            class="filter-btn px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 text-slate-500 hover:border-white/30 hover:text-white transition-all"
+            data-filter="inspection_pending">Inspecting</button>
+        <button onclick="filterItems('Logistics')"
+            class="filter-btn px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 text-slate-500 hover:border-white/30 hover:text-white transition-all"
+            data-filter="Logistics">Logistics</button>
+        <button onclick="filterItems('Repair')"
+            class="filter-btn px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 text-slate-500 hover:border-white/30 hover:text-white transition-all"
+            data-filter="Repair">Repairing</button>
+        <button onclick="filterItems('Repaired')"
+            class="filter-btn px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 text-slate-500 hover:border-white/30 hover:text-white transition-all"
+            data-filter="Repaired">Finished</button>
+        <button onclick="filterItems('Sold')"
+            class="filter-btn px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 text-slate-500 hover:border-white/30 hover:text-white transition-all"
+            data-filter="Sold">Sold</button>
+    </div>
+
+    <!-- Items Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="items-grid">
+        {% for item in items %}
+        <div class="glass-card group overflow-hidden relative flex flex-col item-card transition-all hover:border-accent/40"
+            data-status="{{ item.status }}" data-sold="{% if item.product.is_sold %}true{% else %}false{% endif %}">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-accent/5 blur-2xl pointer-events-none"></div>
+
+            <!-- Asset Visual -->
+            <div class="relative overflow-hidden rounded-xl mb-4 shadow-xl">
+                <img src="{{ item.image.url }}"
+                    class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700"
+                    alt="{{ item.title }}">
+                <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+                    <span class="status-badge text-[9px] shadow-lg
+                        {% if item.status == 'uploaded' %} bg-slate-900/90 text-slate-300
+                        {% elif item.status == 'inspection_pending' %} bg-sky-600/90 text-white
+                        {% elif item.status == 'agent_assigned' or item.status == 'collected' %} bg-indigo-600/90 text-white
+                        {% elif item.status == 'mechanic_assigned' or item.status == 'repairing' %} bg-amber-600/90 text-white
+                        {% elif item.status == 'repair_completed' or item.status == 'awaiting_admin_approval' %} bg-emerald-600/90 text-white
+                        {% elif item.status == 'published_in_store' %} bg-purple-600/90 text-white
+                        {% elif item.status == 'ordered' or item.status == 'delivered' %} bg-rose-600/90 text-white
+                        {% else %} bg-slate-800/90 text-slate-400 {% endif %}">
+                        {{ item.get_status_display|upper }}
+                    </span>
+                    <span
+                        class="px-2 py-0.5 bg-black/60 backdrop-blur-md rounded-md text-[8px] font-black text-white/70 uppercase tracking-widest border border-white/10">
+                        {{ item.category|upper }}
+                    </span>
+                </div>
+
+                <!-- Progress Overlay -->
+                {% if item.repair_progress_percentage > 0 %}
+                <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/40">
+                    <div class="progress-bar h-full bg-accent shadow-[0_0_10px_rgba(16,185,129,0.8)] transition-all duration-1000"
+                        data-progress="{{ item.repair_progress_percentage }}"></div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="flex-1 space-y-4">
+                <div class="flex justify-between items-start">
+                    <a href="{% url 'admin_item_detail' item.pk %}" class="block group/title">
+                        <h4
+                            class="text-xl font-black text-white italic group-hover/title:text-accent transition-colors leading-tight uppercase">
+                            {{ item.title }}
+                        </h4>
+                    </a>
+                    <span class="text-[10px] font-black text-accent italic shadow-sm bg-accent/10 px-2 py-1 rounded">
+                        {{ item.repair_progress_percentage }}%
+                    </span>
+                </div>
+
+                <!-- Strategic Telemetry -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-white/5 p-2.5 rounded-xl border border-white/5">
+                        <p class="text-[8px] font-black text-slate-600 uppercase mb-1">Location Node</p>
+                        <p class="text-[10px] text-white font-bold truncate italic">
+                            {{ item.collection_district|default:"Base Hub" }}
+                        </p>
+                    </div>
+                    <div class="bg-white/5 p-2.5 rounded-xl border border-white/5">
+                        <p class="text-[8px] font-black text-slate-600 uppercase mb-1">Active Entity</p>
+                        <p class="text-[10px] text-accent font-black truncate">
+                            {% if item.assigned_mechanic %}
+                            @{{ item.assigned_mechanic.username }}
+                            {% elif item.assigned_agent %}
+                            @{{ item.assigned_agent.username }}
+                            {% else %}
+                            DECENTRALIZED
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timestamp Logs -->
+                <div
+                    class="flex items-center justify-between text-[9px] font-black text-slate-500 uppercase tracking-tighter pt-2">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span>
+                        <span>Logged: {{ item.created_at|date:"M d, H:i" }}</span>
+                    </div>
+                    {% if item.sold_at %}
+                    <span class="text-rose-500">SOLD: {{ item.sold_at|date:"M d" }}</span>
+                    {% elif item.published_at %}
+                    <span class="text-emerald-500">LIVE: {{ item.published_at|date:"M d" }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Strategic Actions -->
+            <div class="mt-6 pt-6 border-t border-white/5 space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <a href="{% url 'admin_item_detail' item.pk %}"
+                        class="py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest text-center text-slate-400 hover:text-white transition-all">
+                        Inspect
+                    </a>
+
+                    {% if item.status == 'uploaded' %}
+                    <a href="{% url 'approve_item' item.pk %}"
+                        class="py-3 bg-sky-600 hover:bg-sky-500 rounded-xl text-[9px] font-black uppercase tracking-widest text-center text-white transition-all shadow-lg shadow-sky-600/20 italic">
+                        Approve
+                    </a>
+                    {% elif item.status == 'inspection_pending' %}
+                    <a href="{% url 'assign_agent' item.pk %}"
+                        class="py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[9px] font-black uppercase tracking-widest text-center text-white transition-all shadow-lg shadow-indigo-600/20 italic">
+                        Dispatch
+                    </a>
+                    {% elif item.status == 'collected' %}
+                    <a href="{% url 'assign_mechanic' item.pk %}"
+                        class="py-3 bg-amber-600 hover:bg-amber-500 rounded-xl text-[9px] font-black uppercase tracking-widest text-center text-white transition-all shadow-lg shadow-amber-600/20 italic">
+                        Engineer
+                    </a>
+                    {% elif item.status == 'repair_completed' or item.status == 'awaiting_admin_approval' %}
+                    <a href="{% url 'publish_product' item.pk %}"
+                        class="py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[9px] font-black uppercase tracking-widest text-center text-white transition-all shadow-lg shadow-emerald-600/20 italic">
+                        Market
+                    </a>
+                    {% else %}
+                    <div
+                        class="py-3 bg-white/5 border border-white/5 rounded-xl text-[9px] font-black uppercase tracking-widest text-center text-slate-700 italic">
+                        Locked
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-32 text-center glass-card border-dashed border-white/10">
+            <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-700">
+                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+            </div>
+            <p class="text-slate-600 font-black italic tracking-[0.4em] text-[10px] uppercase">Asset Pipeline Empty</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Set width of progress bars from data-progress attribute
+    // (avoids Django template syntax inside CSS style attributes)
+    document.querySelectorAll('.progress-bar').forEach(function (bar) {
+        bar.style.width = (bar.dataset.progress || 0) + '%';
+    });
+    let currentGroup = 'all';
+
+    const statusGroups = {
+        'all': () => true,
+        'uploaded': (s) => s === 'uploaded',
+        'inspection_pending': (s) => s === 'inspection_pending',
+        'Logistics': (s) => ['agent_assigned', 'collected', 'awaiting_admin_approval'].includes(s),
+        'Repair': (s) => ['mechanic_assigned', 'repairing'].includes(s),
+        'Repaired': (s) => ['repair_completed', 'published_in_store'].includes(s),
+        'Sold': (s, sold) => s === 'ordered' || s === 'delivered' || sold === 'true'
+    };
+
+    function filterItems(group) {
+        currentGroup = group;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active-filter', 'border-accent', 'text-accent');
+            btn.classList.add('border-white/10', 'text-slate-500');
+        });
+        const active = document.querySelector(`[data-filter="${group}"]`);
+        active.classList.add('active-filter', 'border-accent', 'text-accent');
+        active.classList.remove('border-white/10', 'text-slate-500');
+
+        applyAllFilters();
+    }
+
+    function searchAssets() {
+        applyAllFilters();
+    }
+
+    function applyAllFilters() {
+        const query = document.getElementById('asset-search').value.toLowerCase();
+
+        document.querySelectorAll('.item-card').forEach(card => {
+            const status = card.dataset.status;
+            const sold = card.dataset.sold;
+            const title = card.querySelector('h4').innerText.toLowerCase();
+            const desc = card.querySelector('p').innerText.toLowerCase();
+
+            const matchesGroup = statusGroups[currentGroup](status, sold);
+            const matchesSearch = title.includes(query) || desc.includes(query);
+
+            card.style.display = (matchesGroup && matchesSearch) ? '' : 'none';
+        });
+    }
+</script>
+{% endblock %}

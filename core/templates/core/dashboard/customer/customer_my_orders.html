@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+
+{% block title %}My Orders | E-Fix Hub{% endblock %}
+{% block page_title %}Order Tracking{% endblock %}
+
+{% block content %}
+<div class="space-y-10 animate-fade-in pb-20">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+        <div>
+            <h1 class="text-4xl md:text-5xl font-black text-white italic tracking-tighter uppercase leading-none">
+                MY ORDERS</h1>
+            <p class="text-slate-500 font-medium mt-3">Track all your acquisitions and delivery status.</p>
+        </div>
+        <a href="{% url 'browse_store' %}"
+            class="btn-accent italic !px-8 !py-3 text-xs font-black uppercase tracking-widest">Browse More Units</a>
+    </div>
+
+    <div class="space-y-6">
+        {% for order in orders %}
+        <div class="glass-card flex flex-col md:flex-row gap-8 items-center">
+            <div class="w-24 h-24 rounded-2xl overflow-hidden border border-white/10 flex-shrink-0">
+                <img src="{{ order.product.display_image.url }}" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+                <h3 class="text-xl font-black text-white italic uppercase tracking-tight">
+                    {{ order.product.linked_item.title }}</h3>
+                <p class="text-xs text-slate-500 mt-1">Order #{{ order.id }} — {{ order.created_at|date:"M d, Y" }}</p>
+            </div>
+            <div class="text-center md:text-right space-y-2">
+                <span class="text-2xl font-black text-white italic">${{ order.total_price }}</span>
+                <div>
+                    {% if order.status == 'delivered' %}
+                    <span
+                        class="status-badge bg-accent/10 text-accent px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Delivered</span>
+                    {% elif order.status == 'out_for_delivery' %}
+                    <span
+                        class="status-badge bg-info/10 text-info px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Out
+                        for Delivery</span>
+                    {% else %}
+                    <span
+                        class="status-badge bg-warning/10 text-warning px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">{{ order.get_status_display }}</span>
+                    {% endif %}
+                </div>
+                {% if order.assigned_agent %}
+                <p class="text-[10px] text-slate-600">Agent: {{ order.assigned_agent.username }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="glass-card py-20 text-center border-dashed">
+            <div
+                class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-dashed border-white/10">
+                <svg class="h-8 w-8 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+            </div>
+            <p
+                class="text-slate-600 font-bold italic tracking-widest text-xs uppercase underline decoration-accent/30 underline-offset-8 decoration-4">
+                No orders placed yet. Browse the store to get started.</p>
+            <a href="{% url 'browse_store' %}"
+                class="btn-accent inline-block mt-8 italic !px-8 !py-3 text-xs font-black uppercase tracking-widest">
+                Enter Store</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

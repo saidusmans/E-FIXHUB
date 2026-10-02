@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+{% block title %}Agent Login | E-Fix Hub{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center -mt-20">
+    <div class="glass-card w-full max-w-md p-10 animate-fade-in relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-info/5 to-transparent pointer-events-none"></div>
+
+        <div class="text-center mb-10 relative z-10">
+            <div
+                class="w-16 h-16 bg-info rounded-2xl flex items-center justify-center shadow-lg shadow-info/20 mx-auto mb-6">
+                <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-black text-white tracking-tight">Agent Login</h1>
+            <p class="text-slate-400 mt-2">Access your logistics dispatch portal</p>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div
+            class="p-4 mb-4 rounded-xl text-xs font-bold border
+            {% if message.tags == 'error' %}bg-danger/10 border-danger/20 text-danger{% else %}bg-info/10 border-info/20 text-info{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post" class="space-y-6 relative z-10" action="{% url 'agent_login' %}">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Username</label>
+                <input type="text" name="username" class="input-premium" placeholder="Enter your username" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Password</label>
+                <input type="password" name="password" class="input-premium" placeholder="••••••••" required>
+            </div>
+            <button type="submit" style="background-color: #3B82F6;"
+                class="w-full py-4 rounded-xl font-black uppercase tracking-widest text-sm text-white hover:bg-blue-700 transition-all">Login
+                as Agent</button>
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-white/5 text-center relative z-10 space-y-2">
+            <p class="text-slate-500 text-sm">New Agent? <a href="{% url 'agent_register' %}"
+                    class="text-info font-bold hover:underline">Apply as Agent</a></p>
+            <p class="text-slate-600 text-xs">Not an Agent? <a href="{% url 'role_selection' %}"
+                    class="text-slate-400 hover:text-white">Choose a different role</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

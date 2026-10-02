@@ -1,0 +1,191 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Mechanic Registration | E-Fix Hub{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="glass-card w-full max-w-3xl p-8 md:p-12 animate-fade-in relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-warning/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
+
+        <div class="relative z-10 text-center mb-12">
+            <h1 class="text-4xl font-black text-white tracking-tight mb-2">Join as <span
+                    class="text-warning">Restoration Mechanic</span></h1>
+            <p class="text-slate-400">Apply to become a certified restoration engineer for specialized devices.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-8 relative z-10">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm font-medium">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="space-y-4">
+                <div class="flex items-center space-x-2 mb-4 border-b border-white/5 pb-2">
+                    <span class="text-warning font-bold text-xs uppercase tracking-widest">01. Personal Identity</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.full_name.id_for_label }}">Full Name</label>
+                        {{ form.full_name }}
+                        {% for error in form.full_name.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.username.id_for_label }}">Username</label>
+                        {{ form.username }}
+                        {% for error in form.username.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.email.id_for_label }}">Email Address</label>
+                        {{ form.email }}
+                        {% for error in form.email.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.phone.id_for_label }}">Phone Number</label>
+                        {{ form.phone }}
+                        {% for error in form.phone.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center space-x-2 mb-4 border-b border-white/5 pb-2">
+                    <span class="text-warning font-bold text-xs uppercase tracking-widest">02. Location &
+                        Workshop</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.state.id_for_label }}">State</label>
+                        {{ form.state }}
+                        {% for error in form.state.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.district.id_for_label }}">District</label>
+                        {{ form.district }}
+                        {% for error in form.district.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                        for="{{ form.workshop_address.id_for_label }}">Workshop Address</label>
+                    {{ form.workshop_address }}
+                    {% for error in form.workshop_address.errors %}
+                    <p class="text-xs text-danger mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.qualification.id_for_label }}">Professional Qualification</label>
+                        {{ form.qualification }}
+                        {% for error in form.qualification.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.specialization.id_for_label }}">Specialization</label>
+                        {{ form.specialization }}
+                        {% for error in form.specialization.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-4"
+                            for="{{ form.workstation_images.id_for_label }}">Workshop / Store Image</label>
+                        {{ form.workstation_images }}
+                        <p class="text-[10px] text-slate-500 mt-2">Optional: Show us your professional setup.</p>
+                        {% for error in form.workstation_images.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-4"
+                            for="{{ form.id_proof_upload.id_for_label }}">Verification Document (ID Proof)</label>
+                        {{ form.id_proof_upload }}
+                        <p class="text-[10px] text-slate-500 mt-2">Upload certification or Goverment ID (JPG, PNG, or
+                            PDF)
+                        </p>
+                        {% for error in form.id_proof_upload.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center space-x-2 mb-4 border-b border-white/5 pb-2">
+                    <span class="text-warning font-bold text-xs uppercase tracking-widest">03. Security
+                        Credentials</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.password1.id_for_label }}">Create Password</label>
+                        {{ form.password1 }}
+                        {% for error in form.password1.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
+                            for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                        {{ form.password2 }}
+                        {% for error in form.password2.errors %}
+                        <p class="text-xs text-danger mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6">
+                <button type="submit"
+                    class="btn-accent w-full py-5 uppercase tracking-widest text-lg font-black italic shadow-lg shadow-warning/20 hover:shadow-warning/40 transition-all active:scale-[0.98] !bg-warning !text-primary">
+                    Register as Mechanic
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-white/5 text-center">
+            <p class="text-slate-500 text-sm">Already a mechanic? <a href="{% url 'login' %}"
+                    class="text-white hover:text-warning font-bold transition-all ml-1">Log In</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

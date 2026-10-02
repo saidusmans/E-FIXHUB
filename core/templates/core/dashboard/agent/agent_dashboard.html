@@ -1,0 +1,255 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Agent Dashboard | E-Fix Hub{% endblock %}
+{% block page_title %}Agent Logistics Center{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- Action Header -->
+    <div class="flex items-end justify-between">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tighter">COLLECTION DISPATCH</h1>
+            <p class="text-slate-500 font-medium mt-1">Operational Zone: <span class="text-info font-bold">Global
+                    Hub</span></p>
+        </div>
+        <div class="hidden md:flex gap-4">
+            <div class="glass-card !py-2 !px-6 flex items-center gap-3">
+                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Live Signals</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Collection Queue -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="glass-card overflow-hidden">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xl font-bold text-white italic">PRIORITY PICKUPS</h3>
+                    <span
+                        class="px-3 py-1 bg-white/5 rounded-lg text-[10px] font-black text-slate-500 uppercase tracking-widest">{{
+                        to_collect.count }} Pending</span>
+                </div>
+
+                <div class="space-y-4">
+                    {% for item in to_collect %}
+                    <div
+                        class="p-8 bg-white/5 border border-white/5 rounded-3xl group hover:bg-white/10 transition-all">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <a href="{% url 'agent_item_detail' item.pk %}"
+                                class="relative w-full md:w-48 h-48 shrink-0 rounded-2xl overflow-hidden shadow-2xl border border-white/10 block group/visual">
+                                <img src="{{ item.image.url }}"
+                                    class="w-full h-full object-cover group-hover/visual:scale-110 transition-transform duration-1000">
+                                <div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
+                                <div class="absolute bottom-4 left-4">
+                                    <span
+                                        class="text-[9px] font-black bg-info text-white px-2 py-1 rounded italic uppercase tracking-tighter">Dispatch
+                                        Ready</span>
+                                </div>
+                            </a>
+
+                            <div class="flex flex-col justify-between flex-1 py-2">
+                                <div>
+                                    <a href="{% url 'agent_item_detail' item.pk %}" class="block group/title">
+                                        <h4
+                                            class="text-2xl font-black text-white tracking-tight group-hover/title:text-accent transition-colors">
+                                            {{ item.title }}</h4>
+                                    </a>
+                                    <div class="flex items-start gap-3 mt-4 text-slate-400">
+                                        <svg class="h-5 w-5 text-accent shrink-0" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <p class="text-sm font-medium leading-relaxed">
+                                            {% if item.status == 'repair_completed' %}
+                                            {{ item.assigned_mechanic.mechanic_profile.workshop_address|default:"Nodal
+                                            Workshop HQ" }}
+                                            {% else %}
+                                            {{ item.collection_address|default:item.uploaded_by.address }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <p class="text-xs text-slate-600 mt-4 font-black uppercase italic tracking-widest">
+                                        {% if item.status == 'repair_completed' %}
+                                        ENGINEERING NODE: @{{ item.assigned_mechanic.username|upper }}
+                                        {% else %}
+                                        CLIENT: @{{ item.uploaded_by.username|upper }}
+                                        {% endif %}
+                                    </p>
+
+                                    {% if item.assigned_mechanic and item.status == 'agent_assigned' %}
+                                    <div
+                                        class="mt-6 p-4 bg-warning/10 border border-warning/20 rounded-2xl animate-pulse-slow">
+                                        <p class="text-[9px] font-black text-warning uppercase tracking-[0.2em] mb-2">
+                                            TARGET RESTORATION NODE</p>
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center text-warning">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-white font-bold text-xs">Engineer: @{{
+                                                    item.assigned_mechanic.username|upper }}</p>
+                                                <p class="text-[10px] text-slate-400 italic">Pre-assigned for direct
+                                                    transit.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="flex gap-4 mt-8">
+                                    <a href="{% url 'mark_collected' item.pk %}"
+                                        class="btn-accent italic !px-10 !py-3 !text-sm flex-1 text-center font-black uppercase tracking-widest">
+                                        {% if item.status == 'repair_completed' %}
+                                        Confirm Retrieval from Workshop
+                                        {% else %}
+                                        Confirm Industrial Collection
+                                        {% endif %}
+                                    </a>
+                                    <button
+                                        class="bg-white/5 p-3 rounded-xl hover:text-danger transition-all border border-white/5">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="py-20 text-center glass-card border-dashed">
+                        <p
+                            class="text-slate-500 font-bold italic text-sm uppercase tracking-widest italic tracking-widest italic">
+                            All routes cleared. Monitoring for new signals...</p>
+                    </div>
+                    {% endfor %}
+                    <div class="glass-card overflow-hidden">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-xl font-bold text-white italic tracking-widest">DELIVERY MISSIONS</h3>
+                            <span
+                                class="px-3 py-1 bg-white/5 rounded-lg text-[10px] font-black text-accent uppercase tracking-widest">{{
+                                to_deliver.count }} Active Orders</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            {% for order in to_deliver %}
+                            <div
+                                class="p-8 bg-white/5 border border-white/5 rounded-3xl group hover:bg-white/10 transition-all">
+                                <div class="flex flex-col md:flex-row gap-8">
+                                    <div
+                                        class="relative w-full md:w-48 h-48 shrink-0 rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                                        <img src="{{ order.product.display_image.url }}"
+                                            class="w-full h-full object-cover">
+                                        <div class="absolute bottom-4 left-4">
+                                            <span
+                                                class="text-[9px] font-black bg-warning text-black px-2 py-1 rounded italic uppercase tracking-tighter">{{
+                                                order.get_status_display|upper }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-col justify-between flex-1 py-2">
+                                        <div>
+                                            <h4
+                                                class="text-2xl font-black text-white tracking-tight group-hover:text-accent transition-colors">
+                                                {{ order.product.linked_item.title }}</h4>
+                                            <div class="flex items-start gap-3 mt-4 text-slate-400">
+                                                <svg class="h-5 w-5 text-accent shrink-0" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                </svg>
+                                                <div>
+                                                    <p
+                                                        class="text-[10px] font-black text-slate-500 uppercase italic mb-1">
+                                                        Target Coordinates (Customer)</p>
+                                                    <p class="text-sm font-medium leading-relaxed">{{
+                                                        order.shipping_address }}</p>
+                                                </div>
+                                            </div>
+                                            <p
+                                                class="text-[9px] font-black text-slate-600 uppercase italic tracking-widest mt-4">
+                                                Buyer: @{{ order.buyer.username|upper }} | Signal: {{
+                                                order.shipping_phone }}</p>
+                                        </div>
+
+                                        <div class="flex gap-4 mt-8 w-full">
+                                            {% if order.status == 'delivery_assigned' %}
+                                            <form action="{% url 'agent_dispatch_order' order.id %}" method="post"
+                                                class="flex-1">
+                                                {% csrf_token %}
+                                                <button type="submit" name="action" value="out_for_delivery"
+                                                    class="w-full bg-warning hover:bg-yellow-500 text-black italic py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                                                    Initiate Last Mile Transit
+                                                </button>
+                                            </form>
+                                            {% elif order.status == 'out_for_delivery' %}
+                                            <a href="{% url 'mark_delivered' order.id %}"
+                                                class="inline-block w-full bg-emerald-600 hover:bg-emerald-500 text-white italic py-3 rounded-xl text-xs text-center font-black uppercase tracking-widest transition-all">
+                                                Confirm Final Delivery
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="py-20 text-center glass-card border-dashed">
+                                <p class="text-slate-500 font-bold italic text-sm uppercase tracking-widest">No active
+                                    delivery missions assigned.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logistics Stats & History -->
+                <div class="space-y-8">
+                    <div class="glass-card">
+                        <h3 class="text-lg font-black text-white italic mb-6">ROUTE METRICS</h3>
+                        <div class="space-y-6">
+                            <div
+                                class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <span
+                                    class="text-xs font-bold text-slate-500 uppercase tracking-widest">Efficiency</span>
+                                <span class="text-xl font-black text-accent italic">98.4%</span>
+                            </div>
+                            <div
+                                class="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Daily
+                                    Target</span>
+                                <span class="text-xl font-black text-warning italic">12 / 15</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3 class="text-lg font-black text-white italic mb-6">COMPLETED NODES</h3>
+                        <div class="space-y-4">
+                            {% for item in assigned_items %}
+                            {% if item.status != 'agent_assigned' and item.status != 'repair_completed' %}
+                            <div
+                                class="flex items-center gap-4 text-sm p-3 hover:bg-white/5 rounded-xl transition-all border-b border-white/5 last:border-none">
+                                <div class="w-2 h-2 rounded-full bg-slate-700"></div>
+                                <span class="text-white font-medium truncate italic">{{ item.title }}</span>
+                                <span class="text-[9px] font-black uppercase text-slate-600 block italic ml-auto">{{
+                                    item.status }}</span>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}

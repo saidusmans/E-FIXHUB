@@ -1,0 +1,128 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ product.linked_item.title }} | Certified Inventory{% endblock %}
+{% block page_title %}Unit Specification Analysis{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-12 animate-fade-in pb-20">
+    <a href="{% url 'browse_store' %}"
+        class="flex items-center gap-2 text-slate-500 hover:text-accent font-bold text-xs uppercase tracking-widest transition-colors mb-8 group">
+        <svg class="h-4 w-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
+        </svg>
+        Return to Inventory
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <!-- Image Analysis -->
+        <div class="space-y-6">
+            <div class="glass-card !p-0 rounded-3xl overflow-hidden border-white/5 shadow-2xl group cursor-zoom-in">
+                <img src="{{ product.display_image.url }}"
+                    class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-1000">
+            </div>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="glass-card !p-0 h-24 rounded-xl overflow-hidden border-accent/30"><img
+                        src="{{ product.display_image.url }}" class="w-full h-full object-cover"></div>
+                <!-- Future Gallery Images -->
+                <div
+                    class="glass-card !p-0 h-24 rounded-xl overflow-hidden opacity-40 bg-white/5 border-dashed border-white/10 flex items-center justify-center text-slate-600 font-black italic text-[10px]">
+                    RECOVERY_01</div>
+                <div
+                    class="glass-card !p-0 h-24 rounded-xl overflow-hidden opacity-40 bg-white/5 border-dashed border-white/10 flex items-center justify-center text-slate-600 font-black italic text-[10px]">
+                    RECOVERY_02</div>
+                <div
+                    class="glass-card !p-0 h-24 rounded-xl overflow-hidden opacity-40 bg-white/5 border-dashed border-white/10 flex items-center justify-center text-slate-600 font-black italic text-[10px]">
+                    RECOVERY_03</div>
+            </div>
+        </div>
+
+        <!-- Specifications & Acquisition -->
+        <div class="space-y-10">
+            <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <span class="status-badge bg-accent/20 text-accent border border-accent/30">Certified
+                        Restored</span>
+                    <span
+                        class="text-xs font-black text-slate-600 uppercase tracking-widest font-black uppercase italic italic">Serial:
+                        EF-{{ product.id|stringformat:"05d" }}</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-black text-white italic tracking-tighter leading-none uppercase">{{ product.linked_item.title }}</h1>
+                <p class="text-slate-400 text-lg leading-relaxed font-medium pt-4">{{ product.linked_item.description }}
+                </p>
+            </div>
+
+            <div class="glass-card !bg-primary/50 space-y-8">
+                <div class="flex items-end justify-between border-b border-white/5 pb-8">
+                    <div>
+                        <p
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 italic tracking-widest">
+                            Acquisition Cost</p>
+                        <span class="text-5xl font-black text-white italic tracking-tighter shadow-accent/20">${{ product.price }}</span>
+                    </div>
+                    <div class="text-right">
+                        <p
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 italic tracking-widest">
+                            Availability</p>
+                        <span class="text-accent font-black italic italic">In Stock Ready</span>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h4 class="text-xs font-black text-white uppercase tracking-[0.2em] italic">Engineering Audit:</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-sm text-slate-400">
+                            <svg class="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Full hardware diagnostic completed
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-400">
+                            <svg class="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Component restoration to factory specs
+                        </li>
+                        <li class="flex items-center gap-3 text-sm text-slate-400">
+                            <svg class="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            90-day industrial warranty inclusion
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="pt-4">
+                    <a href="{% url 'purchase_product' product.pk %}"
+                        class="btn-accent w-full block text-center !py-6 text-xl italic font-black uppercase tracking-widest bg-gradient-to-r from-accent to-emerald-700 shadow-2xl">INITIATE
+                        ACQUISITION</a>
+                    <p
+                        class="text-center text-[10px] text-slate-600 mt-6 font-black uppercase tracking-widest italic tracking-widest">
+                        Secured payment through encrypted industrial channel</p>
+                </div>
+            </div>
+
+            <!-- Technical Origin -->
+            <div class="glass-card">
+                <h3
+                    class="text-sm font-black text-white uppercase tracking-widest mb-6 border-b border-white/5 pb-4 italic tracking-widest">
+                    RESTORATION ORIGIN ANALYSIS</h3>
+                <div class="flex items-center gap-6">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-accent text-3xl italic font-black">
+                        R</div>
+                    <div>
+                        <p class="text-xs text-white font-bold italic tracking-tighter">Restored by Workshop Node-04</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Completed under certified supervision.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

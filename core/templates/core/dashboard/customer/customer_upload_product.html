@@ -1,0 +1,147 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Upload Item | Industrial Intake{% endblock %}
+{% block page_title %}Initiate New Restoration Request{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto animate-fade-in pb-20">
+    <div class="glass-card !bg-transparent !border-none !p-0 mb-12 flex flex-col items-center text-center space-y-4">
+        <div
+            class="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-accent/20">
+            +</div>
+        <h1 class="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">INTAKE PROTOCOL</h1>
+        <p class="text-slate-500 font-medium">Provide high-fidelity specifications and imagery for evaluation.</p>
+    </div>
+
+    <div class="glass-card relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none"></div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-8 relative z-10">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="glass-card !bg-danger/10 border-danger/20 p-4 mb-6">
+                <p class="text-danger text-xs font-black uppercase tracking-widest mb-2">TELEMETRY ERROR DETECTED</p>
+                <ul class="text-[10px] text-danger/80 space-y-1">
+                    {% for field, errors in form.errors.items %}
+                    <li><span class="font-bold">{{ field|title }}:</span> {{ errors|striptags }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Left Sector: Technical Specs -->
+                <div class="space-y-8">
+                    <div>
+                        <label
+                            class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Item
+                            Classification</label>
+                        {{ form.title }}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Category</label>
+                            {{ form.category }}
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Current
+                                Condition</label>
+                            {{ form.condition }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Technical
+                            History/Description</label>
+                        {{ form.description }}
+                    </div>
+                </div>
+
+                <!-- Right Sector: Visuals & Geo-Data -->
+                <div class="space-y-8">
+                    <div>
+                        <label
+                            class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">Diagnostic
+                            Imagery</label>
+                        <div class="relative group cursor-pointer h-48">
+                            <input type="file" name="image" class="absolute inset-0 opacity-0 z-50 cursor-pointer"
+                                id="image-upload" accept="image/*" required>
+                            <div class="h-full border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center space-y-2 group-hover:bg-white/5 transition-all group-hover:border-accent/40"
+                                id="preview-container">
+                                <svg class="h-6 w-6 text-slate-500 group-hover:text-accent" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Transmit Image
+                                    Scan</p>
+                            </div>
+                            <img id="image-preview"
+                                class="absolute inset-0 w-full h-full object-cover rounded-2xl hidden z-10">
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <h4
+                            class="text-[10px] font-black text-accent uppercase tracking-[0.2em] border-b border-white/5 pb-2">
+                            Geostationary Data (Pickup Location)</h4>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label
+                                    class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">District/City</label>
+                                {{ form.collection_district }}
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Physical
+                                    Retrieval Address</label>
+                                {{ form.collection_address }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <p
+                        class="text-[10px] font-bold text-slate-500 max-w-xs leading-relaxed uppercase tracking-widest italic tracking-widest">
+                        Secure Uplink Verified. Data integrity guaranteed by system protocols.</p>
+                </div>
+                <button type="submit"
+                    class="btn-accent italic !px-16 !py-5 text-lg font-black italic tracking-widest shadow-2xl shadow-accent/20">INITIATE
+                    INTAKE</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('image-upload');
+    const preview = document.getElementById('image-preview');
+    const container = document.getElementById('preview-container');
+
+    fileInput.addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                container.classList.add('opacity-0');
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+</script>
+{% endblock %}

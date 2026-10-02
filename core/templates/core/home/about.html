@@ -1,0 +1,72 @@
+{% extends 'core/base.html' %}
+{% block title %}About Us | E-Fix Hub{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-24 animate-fade-in">
+    <!-- Hero Section -->
+    <div class="text-center space-y-6">
+        <h1 class="text-7xl font-black text-white leading-none tracking-tight">Our <span
+                class="text-primary italic">Mission.</span></h1>
+        <p class="text-slate-400 text-2xl max-w-3xl mx-auto leading-relaxed italic">Transforming e-waste into premium
+            refurbished technology through an integrated ecosystem of skilled agents and mechanics.</p>
+    </div>
+
+    <!-- Vision/Strategy Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div class="glass-card p-4 h-[400px] overflow-hidden rounded-3xl relative">
+            <div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
+            <div class="flex flex-col justify-end h-full p-8 z-10 relative">
+                <h2 class="text-4xl font-black text-white mb-4 italic">Sustainability first.</h2>
+                <p class="text-slate-300">We believe in a circular economy where electronic waste is not trash, but a
+                    source of high-quality components and opportunity.</p>
+            </div>
+        </div>
+        <div class="space-y-8">
+            <div class="space-y-2">
+                <span class="text-primary font-bold text-xs uppercase tracking-widest">The Problem</span>
+                <h3 class="text-3xl font-black text-white">50 Million Tons.</h3>
+                <p class="text-slate-400">That's the amount of electronic waste produced annually. Most of it ends up in
+                    landfills, leaking toxic substances into our planet.</p>
+            </div>
+            <div class="space-y-2">
+                <span class="text-primary font-bold text-xs uppercase tracking-widest">Our Solution</span>
+                <h3 class="text-3xl font-black text-white">Restore. Resell. Reuse.</h3>
+                <p class="text-slate-400">By connecting users who have broken hardware with logistics agents and
+                    specialist mechanics, we breathe new life into technology.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="text-center space-y-2 group">
+            <div class="text-5xl font-black text-white group-hover:text-primary transition-colors">5k+</div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-bold">Items Restored</div>
+        </div>
+        <div class="text-center space-y-2 group">
+            <div class="text-5xl font-black text-white group-hover:text-primary transition-colors">1.2k</div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-bold">Expert Mechanics</div>
+        </div>
+        <div class="text-center space-y-2 group">
+            <div class="text-5xl font-black text-white group-hover:text-primary transition-colors">98%</div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-bold">Success Rate</div>
+        </div>
+        <div class="text-center space-y-2 group">
+            <div class="text-5xl font-black text-white group-hover:text-primary transition-colors">4.8</div>
+            <div class="text-xs text-slate-500 uppercase tracking-widest font-bold">User Rating</div>
+        </div>
+    </div>
+
+    <!-- Closing Section -->
+    <div class="glass-card p-12 text-center rounded-[3rem] border border-primary/20 space-y-8 relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+        <h3 class="text-5xl font-black text-white italic">Become part of the <span class="text-primary">E-Fix</span>
+            movement.</h3>
+        <div class="flex flex-wrap justify-center gap-6">
+            <a href="{% url 'role_selection' %}" class="btn-primary py-4 px-12 text-lg">JOIN THE ECOSYSTEM</a>
+            <a href="{% url 'browse_store' %}" class="btn-secondary py-4 px-12 text-lg">BROWSE STORE</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

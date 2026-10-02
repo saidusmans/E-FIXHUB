@@ -1,0 +1,113 @@
+{% extends 'core/base.html' %}
+
+{% block title %}System Analytics | E-Fix Hub{% endblock %}
+{% block page_title %}Executive Data Intel{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tight uppercase">PLATFORM ANALYTICS</h1>
+            <p class="text-slate-500 font-medium tracking-tight">Financial throughput and operational trends.</p>
+        </div>
+        <div class="flex gap-4">
+            <div class="glass-card !py-2 !px-6 border-accent/20">
+                <p class="text-[10px] font-black text-slate-500 uppercase">Gross Revenue</p>
+                <p class="text-xl font-black text-accent italic">₹{{ total_revenue|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Revenue by Category -->
+        <div class="glass-card">
+            <h3 class="text-xl font-bold text-white italic mb-8">REVENUE BY CATEGORY</h3>
+            <div class="h-64">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Orders Trend -->
+        <div class="glass-card">
+            <h3 class="text-xl font-bold text-white italic mb-8">30-DAY ORDER TREND</h3>
+            <div class="h-64">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional KPIs -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="glass-card border-l-4 border-info">
+            <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Avg Repair Cost</p>
+            <p class="text-2xl font-black text-white italic">₹{{ avg_repair_cost|floatformat:2 }}</p>
+        </div>
+        <div class="glass-card border-l-4 border-warning">
+            <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Market Multiplier</p>
+            <p class="text-2xl font-black text-white italic">1.5x</p>
+        </div>
+        <div class="glass-card border-l-4 border-accent">
+            <p class="text-[10px] font-black text-slate-500 uppercase mb-2">System Health</p>
+            <p class="text-2xl font-black text-white italic">OPTIMAL</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+
+    // Category Chart
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ category_labels| safe }},
+        datasets: [{
+            data: {{ category_values| safe }},
+        backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'],
+        borderWidth: 0
+            }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: '#94A3B8', font: { weight: 'bold' } }
+            }
+        }
+    }
+    });
+
+    // Trend Chart
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: {{ trend_labels| safe }},
+        datasets: [{
+            label: 'Orders',
+            data: {{ trend_values| safe }},
+        borderColor: '#10B981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        fill: true,
+        tension: 0.4
+            }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748B' } },
+            x: { grid: { display: false }, ticks: { color: '#64748B' } }
+        },
+        plugins: {
+            legend: { display: false }
+        }
+    }
+    });
+</script>
+{% endblock %}

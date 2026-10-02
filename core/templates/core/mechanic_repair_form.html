@@ -1,0 +1,127 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Complete Repair | Engineering Lab{% endblock %}
+{% block page_title %}Final Restoration Audit{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto animate-fade-in pb-20">
+    <div class="flex items-center gap-4 mb-12">
+        <a href="{% url 'dashboard' %}"
+            class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-accent hover:border-accent transition-all">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <h1 class="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">RESTORATION REPORT
+        </h1>
+    </div>
+
+    <div class="glass-card relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none"></div>
+
+        <form method="post" class="space-y-12 relative z-10">
+            {% csrf_token %}
+            {% if error %}
+            <div class="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-xs font-bold">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Diagnostic Stats -->
+                <div class="space-y-12">
+                    <div class="p-6 bg-white/5 rounded-3xl border border-white/5 space-y-4">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest italic tracking-widest">
+                            ASSET DIAGNOSTIC</h3>
+                        <div class="flex items-center gap-6">
+                            <img src="{{ item.image.url }}"
+                                class="w-20 h-20 rounded-2xl object-cover border border-white/10">
+                            <div>
+                                <h4 class="text-white font-bold italic uppercase">{{ item.title }}</h4>
+                                <p
+                                    class="text-[10px] text-slate-500 font-black tracking-widest uppercase mt-1 italic tracking-widest">
+                                    Node ID: WORK-0{{ item.id }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <label
+                                class="block text-xs font-black text-slate-500 uppercase tracking-widest italic tracking-widest">Restoration
+                                Progress</label>
+                            <span id="progress-value" class="text-accent font-black text-sm italic">{{ item.repair_progress }}%</span>
+                        </div>
+                        <input type="range" name="repair_progress" min="0" max="100" value="{{ item.repair_progress }}"
+                            class="w-full h-2 bg-white/5 rounded-lg appearance-none cursor-pointer accent-accent"
+                            oninput="document.getElementById('progress-value').innerText = this.value + '%'">
+                        <div class="mt-4">
+                            <button type="submit" name="action" value="update_progress"
+                                class="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-[10px] font-black uppercase text-slate-400 hover:text-white transition-all">Update
+                                Bench Progress (Partial)</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label
+                                class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4 italic">Calculated
+                                Restoration Cost (USD)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-accent font-black">$</span>
+                                <input type="number" name="cost" step="0.01"
+                                    value="{{ item.repair_log.cost|default:'' }}" class="input-premium pl-10"
+                                    placeholder="0.00">
+                            </div>
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4 italic">Refurbishment
+                                ETA</label>
+                            <input type="date" name="estimated_completion_date"
+                                value="{{ item.estimated_completion_date|date:'Y-m-d' }}" class="input-premium">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4 italic">Component
+                            Manifest (Parts Replaced)</label>
+                        <textarea name="parts_replaced" rows="3" class="input-premium resize-none"
+                            placeholder="e.g. 1x 5000mAh Lithium Cell, 2x Capacitor (10uF)...">{{ item.parts_replaced|default:'' }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Engineering Notes -->
+                <div class="space-y-4 flex flex-col h-full">
+                    <label
+                        class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4 italic tracking-widest">Technician
+                        Field Notes (Required for Final Audit)</label>
+                    <textarea name="repair_notes" rows="12" class="input-premium resize-none flex-1"
+                        placeholder="Detail all technical interventions, calibrations performed, and final safety audit results...">{{ item.repair_log.repair_notes|default:'' }}</textarea>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center text-accent">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div class="max-w-xs">
+                        <p class="text-[10px] font-black text-white uppercase tracking-widest italic tracking-widest">
+                            FINAL AUDIT RELEASE</p>
+                        <p class="text-[9px] text-slate-500 leading-tight mt-1">Submission will trigger a logistics
+                            request for retrieval. Ensure 100% restoration depth.</p>
+                    </div>
+                </div>
+                <button type="submit" name="action" value="complete_restoration"
+                    class="btn-accent italic !px-16 !py-5 text-lg font-black italic tracking-widest shadow-2xl bg-gradient-to-r from-accent to-emerald-700">EXECUTE
+                    FINAL SIGNAL</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

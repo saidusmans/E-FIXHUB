@@ -1,0 +1,53 @@
+{% extends 'core/base.html' %}
+{% block title %}Admin Login | E-Fix Hub{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center -mt-20">
+    <div class="glass-card w-full max-w-md p-10 animate-fade-in relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-danger/5 to-transparent pointer-events-none"></div>
+
+        <div class="text-center mb-10 relative z-10">
+            <div
+                class="w-16 h-16 bg-danger rounded-2xl flex items-center justify-center shadow-lg shadow-danger/20 mx-auto mb-6">
+                <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-black text-white tracking-tight">Admin Access</h1>
+            <p class="text-slate-400 mt-2">Restricted — Authorized Personnel Only</p>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="p-4 mb-4 rounded-xl text-xs font-bold border bg-danger/10 border-danger/20 text-danger">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post" class="space-y-6 relative z-10" action="{% url 'admin_login' %}">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Admin
+                    Username</label>
+                <input type="text" name="username" class="input-premium" placeholder="Enter admin credentials" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Secure
+                    Password</label>
+                <input type="password" name="password" class="input-premium" placeholder="••••••••" required>
+            </div>
+            <button type="submit" style="background-color: #EF4444;"
+                class="w-full py-4 rounded-xl font-black uppercase tracking-widest text-sm text-white hover:bg-red-700 transition-all">Authenticate
+                as Admin</button>
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-white/5 text-center relative z-10">
+            <p class="text-slate-600 text-xs">Not an Admin? <a href="{% url 'role_selection' %}"
+                    class="text-slate-400 hover:text-white">Return to Role Selection</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

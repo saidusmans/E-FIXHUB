@@ -1,0 +1,136 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Customer Dashboard | E-Fix Hub{% endblock %}
+{% block page_title %}Customer Dashboard Overview{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- Hero Banner -->
+    <div
+        class="glass-card bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80')] bg-cover bg-center border-none relative overflow-hidden h-64 flex items-center p-12 group">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-transparent"></div>
+        <div class="relative z-10">
+            <h1 class="text-4xl font-black text-white italic tracking-tighter">CUSTOMER PORTAL | <span
+                    id="portal-user-greeting">{{ user.username|upper }}</span></h1>
+            <p class="text-slate-400 mt-2 max-w-sm font-medium">Session status: <span
+                    class="text-accent font-bold">Authenticated</span>. You have {{ notifications.count }} active
+                signals.
+            </p>
+            <div class="mt-8">
+                <a href="{% url 'item_upload' %}" class="btn-accent italic !px-8 !py-3">Initiate New Request</a>
+            </div>
+        </div>
+        <div class="absolute right-12 top-1/2 -translate-y-1/2 hidden lg:block animate-pulse">
+            <div class="w-32 h-32 rounded-full border border-accent/20 flex items-center justify-center">
+                <div class="w-24 h-24 rounded-full border border-accent/40 flex items-center justify-center">
+                    <div
+                        class="w-16 h-16 bg-accent rounded-full flex items-center justify-center text-white text-3xl font-black">
+                        ⚡</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Repair Tracker -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="glass-card">
+                <h3 class="text-xl font-bold text-white italic mb-8 border-b border-white/5 pb-4">REPAIR AUDIT TRAIL
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for item in my_items %}
+                    <div
+                        class="bg-white/5 border border-white/5 rounded-3xl overflow-hidden hover:translate-y-[-8px] transition-all duration-500 group">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="{{ item.image.url }}"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute top-4 left-4">
+                                <span class="text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-xl tracking-widest
+                                    {% if item.status == 'uploaded' %} bg-warning/20 text-warning border border-warning/30
+                                    {% elif item.status == 'inspection_pending' %} bg-info/20 text-info border border-info/30
+                                    {% elif item.status == 'repair_completed' or item.status == 'published_in_store' %} bg-accent/20 text-accent border border-accent/30
+                                    {% else %} bg-slate-500/20 text-slate-400 border border-slate-700 {% endif %}">
+                                    {{ item.status }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="text-lg font-bold text-white mb-2 truncate">{{ item.title }}</h4>
+                            <p class="text-xs text-slate-500 line-clamp-2 h-8">{{ item.description }}</p>
+
+                            <!-- Status Bar -->
+                            <div class="mt-8 space-y-2">
+                                <div
+                                    class="flex justify-between items-center text-[10px] font-black uppercase text-slate-600 tracking-tighter">
+                                    <span>Progress</span>
+                                    <span class="text-accent underline">ACTIVE</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-accent to-emerald-400 h-full transition-all duration-1000 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                                        style="width: {{ item.overall_progress }}%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-span-full py-16 text-center border-2 border-dashed border-white/5 rounded-3xl">
+                        <p class="text-slate-600 font-bold italic tracking-widest text-xs uppercase">Your workbench is
+                            currently empty</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Store Sidebar -->
+        <div class="space-y-8">
+            <div class="glass-card bg-accent/5 !border-accent/10">
+                <h3 class="text-lg font-black text-white italic mb-6">CERTIFIED UNITS</h3>
+                <div class="space-y-4">
+                    {% for product in store_products|slice:":3" %}
+                    <div class="group cursor-pointer">
+                        <div
+                            class="flex items-center gap-4 bg-white/5 p-3 px-4 rounded-2xl hover:bg-white/10 transition-all border border-transparent hover:border-accent/20">
+                            <img src="{{ product.display_image.url }}"
+                                class="w-14 h-14 rounded-xl object-cover shadow-lg">
+                            <div class="flex-1 min-w-0">
+                                <h4
+                                    class="text-sm font-bold text-white truncate group-hover:text-accent transition-colors">
+                                    {{ product.linked_item.title }}</h4>
+                                <p class="text-xs text-slate-500 font-black italic tracking-widest mt-1">${{ product.price }}</p>
+                            </div>
+                            <div class="text-accent">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'browse_store' %}"
+                    class="block mt-8 text-center text-[10px] font-black uppercase tracking-widest text-accent hover:underline">Full
+                    Inventory Access →</a>
+            </div>
+
+            <div class="glass-card">
+                <h3 class="text-lg font-black text-white italic mb-6">QUICK UPDATES</h3>
+                <div class="space-y-6">
+                    {% for note in notifications %}
+                    <div class="p-4 bg-white/5 rounded-2xl border-l-4 border-l-accent relative">
+                        <p class="text-xs text-white leading-relaxed">{{ note.message }}</p>
+                        <p class="text-[9px] text-slate-600 mt-2 font-black uppercase">{{ note.created_at|timesince }}
+                            ago</p>
+                    </div>
+                    {% empty %}
+                    <p class="text-xs text-slate-600 text-center italic">No new signals detected.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

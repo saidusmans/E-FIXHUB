@@ -1,0 +1,97 @@
+{% extends 'core/base.html' %}
+{% block title %}Contact Support | E-Fix Hub{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 animate-fade-in">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+        <!-- Contact Info -->
+        <div class="space-y-12">
+            <div class="space-y-4">
+                <h1 class="text-7xl font-black text-white leading-none tracking-tight">Get in <span
+                        class="text-primary italic">Touch.</span></h1>
+                <p class="text-slate-400 text-xl leading-relaxed">System issues, order inquiries, or feedback? Our team
+                    is standing by to assist with the technical infrastructure of E-Fix Hub.</p>
+            </div>
+
+            <div class="space-y-8">
+                <div class="flex items-center space-x-6">
+                    <div
+                        class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                        <svg class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-500 uppercase tracking-widest font-bold">Inquiries</span>
+                        <span class="text-white font-bold text-lg">support@efixhub.com</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div
+                        class="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                        <svg class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span
+                            class="block text-xs text-slate-500 uppercase tracking-widest font-bold">Headquarters</span>
+                        <span class="text-white font-bold text-lg">Industrial Hub, Tech District 9</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operating Hours -->
+            <div class="p-6 bg-white/5 border-l-4 border-primary rounded-r-2xl space-y-2">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs">Response Times</h4>
+                <p class="text-slate-400 text-sm">Our support engineers typically respond within <span
+                        class="text-white font-bold">2-4 business hours</span> for system-critical issues.</p>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="glass-card p-10 md:p-14 relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+
+            <form action="#" class="space-y-6 relative z-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">Full Name</label>
+                        <input type="text"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                            placeholder="John Doe">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">Email Address</label>
+                        <input type="email"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                            placeholder="name@company.com">
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">Subject</label>
+                    <select
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none">
+                        <option class="bg-slate-900">General Inquiry</option>
+                        <option class="bg-slate-900">Technical Support</option>
+                        <option class="bg-slate-900">Partnership Opportunity</option>
+                        <option class="bg-slate-900">Other</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest">Message</label>
+                    <textarea rows="6"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                        placeholder="How can we help?"></textarea>
+                </div>
+                <button type="submit" class="btn-primary w-full py-5 text-lg">SEND TRANSMISSION</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

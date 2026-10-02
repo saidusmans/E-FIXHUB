@@ -1,0 +1,132 @@
+{% extends 'core/base.html' %}
+{% block title %}Mechanic Payouts | E-Fix Hub{% endblock %}
+{% block page_title %}Financial Settlement Node{% endblock %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h1 class="text-4xl font-black text-white italic tracking-tight uppercase">FINANCIAL SETTLEMENT</h1>
+            <p class="text-slate-500 font-medium italic">Managing engineering restoration payouts and audit records.</p>
+        </div>
+        <div class="glass-card !py-3 !px-8 border-l-4 border-l-accent flex flex-col justify-center">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Outstanding</p>
+            <p class="text-2xl font-black text-white italic">₹{{ total_pending|floatformat:2 }}</p>
+        </div>
+    </div>
+
+    <!-- Active Settlement Desk -->
+    <div class="glass-card overflow-hidden">
+        <div class="flex items-center justify-between mb-8 overflow-hidden">
+            <h3
+                class="text-xl font-bold text-white italic underline decoration-accent/50 decoration-4 underline-offset-8">
+                PENDING DISBURSEMENT</h3>
+            <span
+                class="text-[10px] font-black bg-accent/10 text-accent px-4 py-1.5 rounded-full uppercase tracking-tighter">{{ pending_payouts.count }} nodes active</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr
+                        class="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5">
+                        <th class="pb-4 pr-4">Engineer / Node</th>
+                        <th class="pb-4 pr-4">Asset Specifications</th>
+                        <th class="pb-4 pr-4">Settlement Value</th>
+                        <th class="pb-4 text-right">Operational Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for log in pending_payouts %}
+                    <tr class="hover:bg-white/5 transition-colors group">
+                        <td class="py-6 pr-4">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-info/10 border border-info/20 flex items-center justify-center text-info font-black text-xs">
+                                    {{ log.mechanic.username|first|upper }}
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-white group-hover:text-info transition-colors">@{{ log.mechanic.username }}</p>
+                                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-tighter">{{ log.mechanic.district }}, {{ log.mechanic.state }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-6 pr-4">
+                            <p class="text-sm font-bold text-white">{{ log.item.title }}</p>
+                            <p class="text-[10px] text-slate-600 italic">Audit ID: #{{ log.item.id }} • Completed {{ log.completed_at|timesince }} ago</p>
+                        </td>
+                        <td class="py-6 pr-4">
+                            <p class="text-lg font-black text-accent italic">₹{{ log.cost }}</p>
+                        </td>
+                        <td class="py-6 text-right">
+                            <form method="POST" action="{% url 'admin_pay_mechanic' log.pk %}"
+                                class="flex items-center justify-end gap-3">
+                                {% csrf_token %}
+                                <input type="text" name="reference" placeholder="Ref ID/UTR" required
+                                    class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[10px] text-white focus:outline-none focus:border-accent w-32 placeholder:text-slate-700">
+                                <button type="submit"
+                                    class="bg-accent hover:bg-emerald-600 text-white px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-accent/20 transition-all active:scale-95">
+                                    Disperse
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4"
+                            class="py-20 text-center text-slate-600 italic font-bold uppercase tracking-widest text-xs">
+                            No pending financial signals detected.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Settlement History -->
+    <div class="glass-card">
+        <h3 class="text-xl font-bold text-white italic mb-8">ARCHIVED SETTLEMENTS</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr
+                        class="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5">
+                        <th class="pb-4 pr-4">Node</th>
+                        <th class="pb-4 pr-4">Ref ID</th>
+                        <th class="pb-4 pr-4">Value</th>
+                        <th class="pb-4 text-right">Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for log in paid_payouts %}
+                    <tr class="opacity-70 group hover:opacity-100 transition-all">
+                        <td class="py-4 pr-4">
+                            <p class="text-xs font-bold text-white">@{{ log.mechanic.username }}</p>
+                            <p class="text-[9px] text-slate-600 uppercase">{{ log.item.title|truncatechars:20 }}</p>
+                        </td>
+                        <td class="py-4 pr-4">
+                            <span
+                                class="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-1 rounded border border-white/10">{{ log.payment_reference }}</span>
+                        </td>
+                        <td class="py-4 pr-4">
+                            <p class="text-xs font-black text-slate-400">₹{{ log.cost }}</p>
+                        </td>
+                        <td class="py-4 text-right">
+                            <p class="text-[10px] text-slate-500 font-bold italic">{{ log.paid_at|date:"Y-m-d H:i" }}
+                            </p>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-12 text-center text-slate-700 italic text-[10px] uppercase">
+                            Archive repository empty.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
