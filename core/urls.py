@@ -71,6 +71,7 @@ urlpatterns = [
     path('admin-panel/users/',                                   views.admin_manage_users,     name='manage_users'),
     path('admin-panel/users/<int:pk>/',                          views.admin_user_detail,      name='user_detail'),
     path('admin-panel/users/delete/<int:pk>/',                   views.admin_delete_user,      name='delete_user'),
+    path('admin-panel/items/delete/<int:pk>/',                    views.admin_delete_item,      name='delete_item'),
     path('admin-panel/users/approve/<int:pk>/<str:role>/',       views.admin_approve_profile,  name='approve_profile'),
     path('admin-panel/users/toggle-status/<int:pk>/',            views.admin_toggle_user_status, name='toggle_user_status'),
     path('admin-panel/users/revoke-credentials/<int:pk>/',       views.admin_revoke_credentials, name='revoke_credentials'),

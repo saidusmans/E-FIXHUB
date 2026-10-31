@@ -131,6 +131,13 @@ class RoleAccessTests(BaseTestMixin, TestCase):
         response = self.client.get(reverse('manage_users'))
         self.assertNotEqual(response.status_code, 200)
 
+    def test_13b_superuser_role_is_forced_to_admin(self):
+        user = CustomUser.objects.create_superuser(
+            username='superadmin', email='superadmin@test.com', password='testpass123'
+        )
+        self.assertEqual(user.role, 'ADMIN')
+        self.assertEqual(user.effective_role, 'ADMIN')
+
 
 # ═══════════════════════════════════════════════════════════════════
 # 3. UPLOAD WORKFLOW TESTS
@@ -187,6 +194,17 @@ class UploadWorkflowTests(BaseTestMixin, TestCase):
         response = self.client.get(reverse('mark_collected', args=[item.pk]))
         item.refresh_from_db()
         self.assertEqual(item.status, 'collected')
+
+    def test_18b_admin_can_delete_item_and_related_product(self):
+        item = self._create_item()
+        product = Product.objects.create(linked_item=item, price=299.99)
+        self.client.login(username='admin', password='testpass123')
+
+        response = self.client.get(reverse('delete_item', args=[item.pk]))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(EWasteItem.objects.filter(pk=item.pk).exists())
+        self.assertFalse(Product.objects.filter(pk=product.pk).exists())
 
 
 # ═══════════════════════════════════════════════════════════════════

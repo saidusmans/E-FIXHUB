@@ -762,6 +762,21 @@ def admin_delete_user(request, pk):
 
 @login_required
 @user_passes_test(is_admin)
+def admin_delete_item(request, pk):
+    item = get_object_or_404(EWasteItem, pk=pk)
+    item_name = item.title
+
+    product = getattr(item, 'product', None)
+    if product is not None:
+        product.delete()
+
+    item.delete()
+    log(request.user, f"Deleted item: {item_name}")
+    messages.success(request, f"Asset '{item_name}' deleted successfully.")
+    return redirect('manage_products')
+
+@login_required
+@user_passes_test(is_admin)
 def admin_toggle_user_status(request, pk):
     user_obj = get_object_or_404(CustomUser, pk=pk)
     if user_obj.role == 'ADMIN':

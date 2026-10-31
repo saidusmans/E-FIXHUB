@@ -21,8 +21,20 @@ class CustomUser(AbstractUser):
     district = models.CharField(max_length=100, blank=True, null=True)
     address  = models.TextField(blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        if self.is_superuser or self.is_staff:
+            self.role = 'ADMIN'
+        elif self.role == 'ADMIN' and not self.is_superuser and not self.is_staff:
+            self.is_staff = True
+            self.role = 'ADMIN'
+        super().save(*args, **kwargs)
+
+    @property
+    def effective_role(self):
+        return 'ADMIN' if self.is_superuser or self.is_staff or self.role == 'ADMIN' else self.role
+
     def __str__(self):
-        return f"{self.username} ({self.role})"
+        return f"{self.username} ({self.effective_role})"
 
     @property
     def is_verified(self):

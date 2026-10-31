@@ -56,7 +56,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="items-grid">
         {% for item in items %}
         <div class="glass-card group overflow-hidden relative flex flex-col item-card transition-all hover:border-accent/40"
-            data-status="{{ item.status }}" data-sold="{% if item.product.is_sold %}true{% else %}false{% endif %}">
+            data-status="{{ item.status }}" data-sold="{% if item.product and item.product.is_sold %}true{% else %}false{% endif %}">
             <div class="absolute top-0 right-0 w-24 h-24 bg-accent/5 blur-2xl pointer-events-none"></div>
 
             <!-- Asset Visual -->
@@ -176,6 +176,11 @@
                     </div>
                     {% endif %}
                 </div>
+                <a href="{% url 'delete_item' item.pk %}"
+                    class="mt-3 block w-full py-3 bg-red-600 hover:bg-red-500 rounded-xl text-[9px] font-black uppercase tracking-widest text-center text-white transition-all shadow-lg shadow-red-600/20"
+                    onclick="return confirm('Delete this asset permanently?');">
+                    Delete Item
+                </a>
             </div>
         </div>
         {% empty %}

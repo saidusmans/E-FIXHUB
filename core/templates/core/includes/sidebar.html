@@ -21,7 +21,7 @@
             Dashboard
         </a>
 
-        {% if user.role == 'ADMIN' %}
+        {% if user.effective_role == 'ADMIN' %}
         <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Administration</div>
         <a href="{% url 'manage_users' %}"
             class="sidebar-link {% if request.resolver_match.url_name == 'manage_users' %}active{% endif %}">
@@ -73,7 +73,7 @@
         </a>
         {% endif %}
 
-        {% if user.role == 'CUSTOMER' %}
+        {% if user.effective_role == 'CUSTOMER' %}
         <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">My Account</div>
         <a href="{% url 'item_upload' %}"
             class="sidebar-link {% if request.resolver_match.url_name == 'item_upload' %}active{% endif %}">
@@ -101,7 +101,7 @@
         </a>
         {% endif %}
 
-        {% if user.role == 'AGENT' %}
+        {% if user.effective_role == 'AGENT' %}
         <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Logistics</div>
         <a href="{% url 'assigned_collections' %}"
             class="sidebar-link {% if request.resolver_match.url_name == 'assigned_collections' %}active{% endif %}">
@@ -121,7 +121,7 @@
         </a>
         {% endif %}
 
-        {% if user.role == 'MECHANIC' %}
+        {% if user.effective_role == 'MECHANIC' %}
         <div class="px-6 mt-8 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Workshop</div>
         <a href="{% url 'assigned_repairs' %}"
             class="sidebar-link {% if request.resolver_match.url_name == 'assigned_repairs' %}active{% endif %}">
@@ -153,7 +153,7 @@
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-bold text-white truncate">{{ user.username }}</p>
-                <p class="text-[10px] text-accent uppercase font-black">{{ user.role }}</p>
+                <p class="text-[10px] text-accent uppercase font-black">{{ user.effective_role }}</p>
             </div>
             <a href="{% url 'logout' %}" title="Logout" class="text-slate-500 hover:text-red-400 transition-colors">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

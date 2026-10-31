@@ -108,6 +108,9 @@
                             </a>
                             <a href="{% url 'approve_item' item.pk %}"
                                 class="btn-accent !py-2.5 !px-6 !text-[10px] uppercase font-black tracking-widest shadow-xl">Approve</a>
+                            <a href="{% url 'delete_item' item.pk %}"
+                                class="bg-red-600 hover:bg-red-500 text-white !py-2.5 !px-5 !text-[10px] uppercase font-black tracking-widest rounded-xl transition-all shadow-lg shadow-red-600/20"
+                                onclick="return confirm('Delete this pending item permanently?');">Delete</a>
                         </div>
                     </div>
                     {% empty %}

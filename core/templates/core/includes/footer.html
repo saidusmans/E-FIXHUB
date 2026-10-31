@@ -6,10 +6,9 @@
         </div>
 
         <div class="flex gap-8 text-xs text-slate-500 font-medium tracking-wide">
-            <a href="#" class="hover:text-accent transition-all">Privacy Policy</a>
-            <a href="#" class="hover:text-accent transition-all">Terms of Service</a>
-            <a href="#" class="hover:text-accent transition-all">Help Center</a>
-            <a href="#" class="hover:text-accent transition-all">Report Issue</a>
+            <a href="{% url 'privacy_policy' %}" class="hover:text-accent transition-all">Privacy Policy</a>
+            <a href="{% url 'terms_conditions' %}" class="hover:text-accent transition-all">Terms & Conditions</a>
+            <a href="{% url 'about' %}" class="hover:text-accent transition-all">About Us</a>
         </div>
 
         <div class="flex gap-4">
