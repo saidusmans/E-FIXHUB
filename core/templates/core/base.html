@@ -85,12 +85,29 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @media (max-width: 1023px) {
+            #mainSidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 50;
+                transform: translateX(-105%);
+                transition: transform 0.25s ease-in-out;
+                display: flex !important;
+                min-height: 100vh;
+            }
+            #mainSidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 
 <body class="flex overflow-x-hidden">
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-950/60 z-40 hidden lg:hidden"></div>
 
     {% block sidebar %}
     {% include 'core/includes/sidebar.html' %}
@@ -126,6 +143,36 @@
                 setTimeout(() => toast.remove(), 500);
             }, 5000);
         }
+
+        function toggleMobileMenu() {
+            const panel = document.getElementById('mobileMenuPanel');
+            const button = document.getElementById('mobileMenuButton');
+            if (!panel || !button) return;
+
+            const isHidden = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !isHidden);
+            button.setAttribute('aria-expanded', String(isHidden));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const button = document.getElementById('mobileMenuButton');
+            const panel = document.getElementById('mobileMenuPanel');
+
+            if (button) {
+                button.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    toggleMobileMenu();
+                });
+            }
+
+            document.addEventListener('click', function (event) {
+                if (!panel || !button) return;
+                if (!panel.contains(event.target) && !button.contains(event.target)) {
+                    panel.classList.add('hidden');
+                    button.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
 
         // Initialize Django messages as toasts
         {% if messages %}

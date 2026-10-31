@@ -1,12 +1,40 @@
 <header
     class="h-20 bg-primary/50 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 px-8 flex items-center justify-between">
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 relative">
         <!-- Mobile Menu Toggle -->
-        <button class="lg:hidden text-white p-2">
+        <button id="mobileMenuButton" type="button" aria-label="Toggle menu" aria-expanded="false" class="lg:hidden text-white p-2 rounded-xl hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-accent/50">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
         </button>
+
+        <div id="mobileMenuPanel" class="hidden absolute left-0 top-14 z-50 w-72 rounded-2xl border border-white/10 bg-slate-900/95 shadow-2xl backdrop-blur-xl p-3">
+            <div class="space-y-1">
+                <a href="{% url 'home' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/5 hover:text-white transition-colors">
+                    <span>🏠</span> Home
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/5 hover:text-white transition-colors">
+                        <span>📊</span> Dashboard
+                    </a>
+                    <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-300 hover:bg-red-500/10 hover:text-red-200 transition-colors">
+                        <span>🚪</span> Logout
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/5 hover:text-white transition-colors">
+                        <span>🔐</span> Login
+                    </a>
+                {% endif %}
+                <div class="my-2 border-t border-white/10"></div>
+                <a href="{% url 'privacy_policy' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/5 hover:text-white transition-colors">
+                    <span>🛡️</span> Privacy Policy
+                </a>
+                <a href="{% url 'terms_conditions' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-200 hover:bg-white/5 hover:text-white transition-colors">
+                    <span>📄</span> Terms & Conditions
+                </a>
+            </div>
+        </div>
+
         <h2 class="text-xl font-bold text-white hidden md:block">{% block page_title %}Dashboard Overview{% endblock %}
         </h2>
     </div>

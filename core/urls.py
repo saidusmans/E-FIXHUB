@@ -7,6 +7,8 @@ urlpatterns = [
     path('',          views.home,           name='home'),
     path('about/',    views.about,          name='about'),
     path('contact/',  views.contact,        name='contact'),
+    path('privacy/',  views.privacy_policy,  name='privacy_policy'),
+    path('terms/',    views.terms_conditions, name='terms_conditions'),
     path('start/',           views.role_selection,  name='role_selection'),
     path('role-selection/',   views.role_selection),    # alias
 

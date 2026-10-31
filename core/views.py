@@ -83,6 +83,15 @@ def about(request):
 def contact(request):
     return render(request, 'core/home/contact.html')
 
+
+def privacy_policy(request):
+    return render(request, 'core/home/privacy_policy.html')
+
+
+def terms_conditions(request):
+    return render(request, 'core/home/terms_conditions.html')
+
+
 def role_selection(request):
     if request.user.is_authenticated:
         return role_redirect(request)
@@ -135,7 +144,15 @@ def logout_view(request):
     if request.user.is_authenticated:
         log(request.user, f"{request.user.role} logged out")
     auth_logout(request)
-    return redirect('home')
+
+    next_page = request.META.get('HTTP_REFERER')
+    if next_page:
+        from urllib.parse import urlparse
+        referer = urlparse(next_page)
+        if referer.scheme in ('http', 'https') and referer.netloc in ('127.0.0.1:8000', 'localhost:8000', 'localhost', '127.0.0.1'):
+            return redirect(referer.path or 'role_selection')
+
+    return redirect('role_selection')
 
 
 # ─── REGISTRATION ─────────────────────────────────────────────────
